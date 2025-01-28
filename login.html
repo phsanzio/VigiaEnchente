@@ -9,11 +9,11 @@
 </head>
 <body>
   <div class="container">
-    <h1>VigiaEnchente</h1>
+    <h1 class="titulo">VigiaEnchente</h1>
     <hr class="linha">
 
     <!-- Login Section -->
-     <div class="box">
+     <div class="box" id="container">
       <div class="form-container login-container">
         <h2>Login</h2>
         <div class="icon-placeholder">
@@ -24,7 +24,7 @@
           <input type="password" placeholder="Senha" required class="input-group">
           <button type="submit">Entrar</button>
           <div class="options">
-            <label><input type="checkbox"> Lembre-se</label>
+            <label><input type="checkbox" class="checkbox"> Lembre-se</label>
             <a href="#">Esqueci a senha</a>
           </div>
         </form>
@@ -41,20 +41,20 @@
           <input type="password" placeholder="Senha" required class="input-group">
           <input type="password" placeholder="Confirmar senha" required class="input-group">
           <button type="submit">Continuar</button>
-          <label><input type="checkbox"> Aceito os termos de serviço.</label>
+          <label><input type="checkbox" class="checkbox"> Aceito os termos de serviço.</label>
         </form>
       </div>
       <div class="toggle-container">
         <div class="toggle">
             <div class="toggle-panel toggle-left">
-                <h1>Welcome Back!</h1>
-                <p>Enter your personal details to use all of site features</p>
-                <button class="hidden" id="login">Sign In</button>
+                <h1>Bem-vindo de volta!</h1>
+                <p>Digite seus dados pessoais para usar todos os recursos do site</p>
+                <button class="hidden" id="login">Entrar</button>
             </div>
             <div class="toggle-panel toggle-right">
-                <h1>Hello, Friend!</h1>
-                <p>Register with your personal details to use all of site features</p>
-                <button class="hidden" id="register">Sign Up</button>
+                <h1>Olá, Amigo!</h1>
+                <p>Cadastre-se com seus dados pessoais para usar todos os recursos do site</p>
+                <button class="hidden" id="register">Cadastrar</button>
             </div>
         </div>
 
