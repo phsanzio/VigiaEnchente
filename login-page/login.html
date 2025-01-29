@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VigiaEnchente</title>
+  <link rel="stylesheet" href="login.css">
+  <script src="login.js"></script>
+</head>
+<body>
+  <div class="blur"></div>
+  <div class="container">
+    <h1 class="titulo">VigiaEnchente</h1>
+    <hr class="linha">
+
+    <!-- Login Section -->
+     <div class="box" id="container">
+      <div class="form-container login-container">
+        <h2>Login</h2>
+        <div class="icon-placeholder">
+          <img src="user.png" alt="">
+        </div>
+        <form action="#" method="post">
+          <input type="email" placeholder="Email" required class="input-group">
+          <input type="password" placeholder="Senha" required class="input-group">
+          <button type="submit">Entrar</button>
+          <div class="options">
+            <label><input type="checkbox" class="checkbox"> Lembre-se</label>
+            <a href="#">Esqueci a senha</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Cadastro Section -->
+      <div class="form-container cadastro-container">
+        <h2>Cadastro</h2>
+        <p>Cadastre-se para receber notificações em tempo real</p>
+        <form action="#" method="post">
+          <input type="text" placeholder="Nome completo" required class="input-group">
+          <input type="email" placeholder="Email" required class="input-group">
+          <input type="tel" placeholder="Telefone" required class="input-group">
+          <input type="password" placeholder="Senha" required class="input-group">
+          <input type="password" placeholder="Confirmar senha" required class="input-group">
+          <button type="submit">Continuar</button>
+          <label><input type="checkbox" class="checkbox"> Aceito os termos de serviço.</label>
+        </form>
+      </div>
+      <div class="toggle-container">
+        <div class="toggle">
+            <div class="toggle-panel toggle-left">
+                <h1>Bem-vindo de volta!</h1>
+                <p>Digite seus dados pessoais para usar todos os recursos do site</p>
+                <button class="hidden" id="login">Entrar</button>
+            </div>
+            <div class="toggle-panel toggle-right">
+                <h1>Olá, Amigo!</h1>
+                <p>Cadastre-se com seus dados pessoais para usar todos os recursos do site</p>
+                <button class="hidden" id="register">Cadastrar</button>
+            </div>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
