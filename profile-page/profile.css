@@ -43,12 +43,12 @@ body {
   padding: 20px;
 }
 
-.titulo{
+.title{
   align-self: flex-start;
   color: #fff;
 }
 
-.linha{
+.line-title{
   width: 100%;
   border-bottom: 3px solid rgba(255, 255, 255, 0.432);
 }
@@ -113,4 +113,19 @@ body {
 
 p{
   font-size: 20px;
+}
+
+button{
+  background-color: #8697aa4d;
+  color: #fff;
+  font-size: 12px;
+  height: 45px;
+  width: 160px;
+  border: 2px solid white;
+  border-radius: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 10px;
+  cursor: pointer;
 }
