@@ -16,16 +16,28 @@ body {
   align-items: center;
   flex-direction: column;
   height: 100vh;
+  width: 100%;
+}
+
+.blur{
+  height: 70%;
+  width: 70%;
+  backdrop-filter: blur(10px);
+  position: absolute;
+  z-index: 0;
+  filter: drop-shadow(10px 0px black);
 }
 
 .container {
   height: 70%;
+  z-index: 1;
   width: 70%;
   gap: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgba(130, 173, 189, 0.664);
+  position: relative;
+  background-color: rgba(93, 211, 255, 0.20); 
   border-radius: 10px;
   padding: 20px;
 }
@@ -56,6 +68,7 @@ body {
   line-height: 20px;
   letter-spacing: 0.3px;
   margin: 20px 0;
+  text-align: center;
 }
 
 .box label{
@@ -72,7 +85,7 @@ body {
 
 .box a{
   font-size: 13px;
-  color: #333;
+  color: #fff;
   text-decoration: none;
   margin: 15px 0 10px;
 }
@@ -109,8 +122,8 @@ body {
 .box input{
   background-color: #eee;
   border: none;
-  margin: 8px 0;
-  padding: 10px 15px;
+  margin: 2px 0;
+  padding: 10px;
   font-size: 13px;
   border-radius: 8px;
   width: 100%;
