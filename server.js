@@ -3,6 +3,8 @@ const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const path = require('path');
+const { error } = require('console');
+const session = require('express-session');
 
 const app = express();
 const port = 3000;
@@ -27,6 +29,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 
+app.use(session({
+  secret: 'segredo-super-seguro', // Chave secreta para assinar o cookie da sessão
+  resave: false, // Não salva a sessão se nada foi modificado
+  saveUninitialized: true, // Salva sessões não inicializadas
+  cookie: { maxAge: 3600000 } // Tempo de expiração do cookie (1 hora)
+}));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -43,10 +51,13 @@ app.post('/login', (req, res) => {
 
   // Verifica se o email existe
   db.query('SELECT * FROM Users WHERE email = ?', [email], (err, results) => {
-    if (err) throw err;
+    if (err){
+      console.error('Erro ao autenticar:', err)
+      return res.status(500).json({error: 'Erro interno do servidor.'})
+    };
 
     if (results.length === 0) {
-      return res.status(404).send('Usuário não encontrado');
+      return res.status(404).json({error: 'Usuário não encontrado'});
     }
 
     const user = results[0];
@@ -56,7 +67,11 @@ app.post('/login', (req, res) => {
       if (err) throw err;
 
       if (result) {
-        res.status(200).json('Login bem-sucedido');
+        req.session.userId = user.id_user; // Armazena o ID do usuário na sessão
+        req.session.userName = user.nome; // Armazena o nome do usuário
+        req.session.userEmail = user.email; // Armazena o e-mail
+        req.session.userPhone = user.phone;
+        res.status(200).json({message: 'Login bem-sucedido'});
       } else {
         res.status(400).json('Senha incorreta');
       }

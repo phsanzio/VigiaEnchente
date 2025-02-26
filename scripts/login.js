@@ -13,20 +13,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('login-form').addEventListener('submit', function(event) {
       event.preventDefault();
-      
+    
       const email = document.getElementById('login-email').value;
-      const senha = document.getElementById('login-password').value;
+      const password = document.getElementById('login-password').value;
     
       fetch('http://localhost:3000/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email, senha })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
       })
-      .then(response => response.json())
-      .then(data => alert(data))
-      .catch(error => console.error('Erro:', error));
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error); });
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert(data.message); // Exibe mensagem de sucesso
+          window.location.href = '/profile.html'; // Redireciona para a página de perfil
+        })
+        .catch(error => console.error('Erro:', error.message));
     });
   
     document.getElementById('cadastro-form').addEventListener('submit', function(event) {
