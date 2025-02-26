@@ -1,0 +1,27 @@
+{
+  "name": "vigiaenchente",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phsanzio/VigiaEnchente.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/phsanzio/VigiaEnchente/issues"
+  },
+  "homepage": "https://github.com/phsanzio/VigiaEnchente#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "mysql2": "^3.12.0"
+  }
+}

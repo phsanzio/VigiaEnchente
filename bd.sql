@@ -2,8 +2,11 @@ create database IF not exists VigiaEnchente;
 use VigiaEnchente;
 
 create table if not exists Users (
-    id_user INT(11) primary key,
-    nome varchar(255)
+    id_user INT(11) AUTO_INCREMENT PRIMARY KEY,
+    nome varchar(255),
+    email varchar(255) UNIQUE NOT NULL,
+    phone INT(11) UNIQUE NOT NULL,
+    senha varchar(255) NOT NULL
 );
 
 create table if not exists Address (
