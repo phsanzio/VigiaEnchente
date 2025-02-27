@@ -2,12 +2,18 @@ const express = require('express');
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const { v4: uuidv4 } = require('uuid');
+const session = require('express-session');
+const cors = require('cors');
 const path = require('path');
 const { error } = require('console');
-const session = require('express-session');
+const port = 3000;
 
 const app = express();
-const port = 3000;
+app.use(cors());
+app.use(cookieParser());
+
 
 // Conexão com o banco de dados MySQL
 const db = mysql.createConnection({
@@ -42,13 +48,19 @@ app.get('/', (req, res) => {
 
 // Rota para a página de login (login.html)
 app.get('/login', (req, res) => {
+  res.json({
+    userId: req.session.userId,
+    name: req.session.userName,
+    email: req.session.userEmail,
+    phone: req.session.userPhone
+  });
   res.sendFile(path.join(__dirname, 'login.html'));
+
 });
 
 // Rota para login
 app.post('/login', (req, res) => {
   const { email, senha } = req.body;
-
   // Verifica se o email existe
   db.query('SELECT * FROM Users WHERE email = ?', [email], (err, results) => {
     if (err){
@@ -61,7 +73,7 @@ app.post('/login', (req, res) => {
     }
 
     const user = results[0];
-    
+
     // Verifica se a senha está correta
     bcrypt.compare(senha, user.senha, (err, result) => {
       if (err) throw err;
@@ -71,7 +83,12 @@ app.post('/login', (req, res) => {
         req.session.userName = user.nome; // Armazena o nome do usuário
         req.session.userEmail = user.email; // Armazena o e-mail
         req.session.userPhone = user.phone;
-        res.status(200).json({message: 'Login bem-sucedido'});
+        if (req.headers['content-type'] === 'application/json') {
+          return res.status(200).json({
+            message: 'Login bem-sucedido',
+            redirect: '/index.html'
+          });
+        }
       } else {
         res.status(400).json('Senha incorreta');
       }
