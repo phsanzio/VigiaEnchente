@@ -48,14 +48,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const forms_cadastro = document.getElementById('cadastro-form');
       const nome = document.getElementById('cadastro-nome').value.trim();
       const email = document.getElementById('cadastro-email').value.trim();
-      const phone = document.getElementById('cadastro-phone').value.trim();
+      const telefone = document.getElementById('cadastro-phone').value.trim();
       const senha = document.getElementById('cadastro-password').value.trim();
       const confirm = document.getElementById('confirm-password').value.trim();
       const terms_confirm = document.getElementById('terms_confirm');
       
       if (confirm == senha){
-        let telefone = phone.replace(/\D/g, '');
-        if (telefone.length === 11) {
+        let phone = telefone.replace(/\D/g, '');
+        if (phone.length === 11) {
           if (terms_confirm.checked){
             fetch('http://localhost:3000/cadastro', {
               method: 'POST',
