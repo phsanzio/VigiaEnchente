@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('login-form').addEventListener('submit', function(event) {
       event.preventDefault();
-    
+      
+      const forms_login = document.getElementById('login-form');
       const email = document.getElementById('login-email').value.trim();
       const senha = document.getElementById('login-password').value.trim();
       
@@ -30,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(data => {
           alert(data.message); // Exibe mensagem de sucesso
+          forms_login.reset();
           window.location.href = '/profile';// Redireciona para a página de perfil
         })
         .catch(error => {
@@ -41,36 +43,42 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('cadastro-form').addEventListener('submit', function(event) {
       event.preventDefault();
       
+      const forms_cadastro = document.getElementById('cadastro-form');
       const nome = document.getElementById('cadastro-nome').value.trim();
       const email = document.getElementById('cadastro-email').value.trim();
       const phone = document.getElementById('cadastro-phone').value.trim();
       const senha = document.getElementById('cadastro-password').value.trim();
       const confirm = document.getElementById('confirm-password').value.trim();
-
+      const terms_confirm = document.getElementById('terms_confirm');
 
       if (confirm == senha){
-        fetch('http://localhost:3000/cadastro', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ nome, email, phone, senha })
-        })
-        .then(response => {
-          if (!response.ok) {
-            return response.json().then(err => { throw new Error(err.error); });
-          }
-          return response.json();
-        })
-        .then(data => {
-          alert(data.message); // Exibe mensagem de sucesso
-        })
-        .catch(error => {
-          console.error('Erro:', error.message);
-          alert(error.message);
-        });
+        if (terms_confirm.checked){
+          fetch('http://localhost:3000/cadastro', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ nome, email, phone, senha })
+          })
+          .then(response => {
+            if (!response.ok) {
+              return response.json().then(err => { throw new Error(err.error); });
+            }
+            return response.json();
+          })
+          .then(data => {
+            alert(data.message); // Exibe mensagem de sucesso
+            forms_cadastro.reset();
+          })
+          .catch(error => {
+            console.error('Erro:', error.message);
+            alert(error.message);
+          });
+        } else {
+          alert('Aceite os termos de serviço, por favor.');
+        }
       } else {
-        alert('Senhas não coincidem!')
+        alert('Senhas não coincidem!');
       }
     })
   });
