@@ -3,9 +3,9 @@ use VigiaEnchente;
 
 create table if not exists Users (
     id_user INT(11) AUTO_INCREMENT PRIMARY KEY,
-    nome varchar(255),
+    nome varchar(255) NOT NULL,
     email varchar(255) UNIQUE NOT NULL,
-    phone INT(11) UNIQUE NOT NULL,
+    phone varchar(15) UNIQUE NOT NULL,
     senha varchar(255) NOT NULL
 );
 

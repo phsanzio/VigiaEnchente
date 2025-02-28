@@ -135,7 +135,7 @@ app.post('/cadastro', (req, res) => {
         return res.status(500).json({ error: 'Erro ao cadastrar o usuário.' });
       }
 
-      res.status(201).json({ message: 'Usuário cadastrado com sucesso' });
+      res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
     });
   });
 });

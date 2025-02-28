@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
       const email = document.getElementById('login-email').value.trim();
       const senha = document.getElementById('login-password').value.trim();
-    
+      
       fetch('http://localhost:3000/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,30 +45,34 @@ document.addEventListener('DOMContentLoaded', function () {
       const email = document.getElementById('cadastro-email').value.trim();
       const phone = document.getElementById('cadastro-phone').value.trim();
       const senha = document.getElementById('cadastro-password').value.trim();
-      
-  
-      fetch('http://localhost:3000/cadastro', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ nome, email, phone, senha })
-      })
-      .then(response => {
-        if (!response.ok) {
-          return response.json().then(err => { throw new Error(err.error); });
-        }
-        return response.json();
-      })
-      .then(data => {
-        alert(data.message); // Exibe mensagem de sucesso
-      })
-      .catch(error => {
-        console.error('Erro:', error.message);
-        alert(error.message);
-      });
-    });
+      const confirm = document.getElementById('confirm-password').value.trim();
 
+
+      if (confirm == senha){
+        fetch('http://localhost:3000/cadastro', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nome, email, phone, senha })
+        })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error); });
+          }
+          return response.json();
+        })
+        .then(data => {
+          alert(data.message); // Exibe mensagem de sucesso
+        })
+        .catch(error => {
+          console.error('Erro:', error.message);
+          alert(error.message);
+        });
+      } else {
+        alert('Senhas não coincidem!')
+      }
+    })
   });
 
   
