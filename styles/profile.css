@@ -19,16 +19,16 @@ body {
 }
 
 .blur{
-  height: 70%;
-  width: 70%;
+  height: 81%;
+  width: 66%;
+  border-radius: 10px;
   backdrop-filter: blur(10px);
   position: absolute;
   z-index: 0;
-  filter: drop-shadow(10px 0px black);
 }
 
 .container {
-  height: 70%;
+  height: max-content;
   z-index: 1;
   width: 70%;
   gap: 10px;

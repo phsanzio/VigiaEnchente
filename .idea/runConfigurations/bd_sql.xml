@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="bd.sql" type="DatabaseScript" editBeforeRun="true" singleton="false" nameIsGenerated="true">
+    <script-file value="$PROJECT_DIR$/bd.sql" />
+    <script-mode>FILE</script-mode>
+    <data-source id="fc5d0c51-9656-42a2-be35-0893bd8ab0f1" namespace="schema/&quot;VigiaEnchente&quot;" />
+    <method v="2" />
+  </configuration>
+</component>

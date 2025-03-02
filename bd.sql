@@ -10,48 +10,50 @@ create table if not exists Users (
 );
 
 create table if not exists Address (
+    id_address int AUTO_INCREMENT,
     id_address_user int(11),
     foreign key (id_address_user) references Users(id_user) 
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-    id_address int,
     rua varchar(45),
+    num_rua varchar(45),
     cep varchar(8),
     bairro varchar(45),
-    num_rua varchar(45),
+    cidade varchar(45),
     primary key (id_address, id_address_user)
 );
 
 create table if not exists Phone (
     id_phone_user int(11),
-    foreign key (id_phone_user) references Users(id_user) 
+    foreign key (id_phone_user) references Users(id_user)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
     id_phone int,
-    numero varchar(11),
+    numero varchar(15),
     primary key (id_phone, id_phone_user)
 );
 
 create table if not exists Message (
-    id_msg INT(11),
+    id_msg INT(11) AUTO_INCREMENT,
+    id_user_msg int(11),
     date_msg date,
     hour_msg timestamp,
     content_msg text(4096),
-    id_user_msg int(11),
-    foreign key (id_user_msg) references Users(id_user) 
+    primary key (id_msg, id_user_msg),
+    unique key (id_msg),
+    foreign key (id_user_msg) references Users(id_user)
     ON DELETE CASCADE
-    ON UPDATE CASCADE,
-    primary key (id_msg, id_user_msg)
+    ON UPDATE CASCADE
 );
 
 create table if not exists Alert (
-    id_alert INT(11),
+    id_alert INT(11) AUTO_INCREMENT,
     date_alert date,
     hour_alert timestamp,
     content_alert text(4096),
     id_msg_alert int(11),
+    primary key (id_alert, id_msg_alert),
     foreign key (id_msg_alert) references Message(id_msg) 
     ON DELETE CASCADE
-    ON UPDATE CASCADE,
-    primary key (id_alert, id_msg_alert)
+    ON UPDATE CASCADE
 );

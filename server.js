@@ -1,21 +1,25 @@
 const express = require('express');
+const session = require('express-session');
 const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const path = require('path');
 const { error } = require('console');
 const cors = require('cors');
-const session = require('express-session');
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: true, // Permite todas as origens
+  credentials: true // Permite cookies/sessão
+};
+app.use(cors(corsOptions));
 const port = 3000;
 
 // Conexão com o banco de dados MySQL
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',
-  password: '',
+  user: 'abade',
+  password: 'Raphaell1@',
   database: 'VigiaEnchente'
 });
 
@@ -59,18 +63,14 @@ app.get('/login', (req, res) => {
 
 app.get('/profile', (req, res) => {
   if (!req.session.userId) {
-    // Redireciona para a página de login se o usuário não estiver autenticado
     return res.redirect('/login');
   }
-
-  // Envia a página profile.html se o usuário estiver autenticado
   res.sendFile(path.join(__dirname, 'profile.html'));
 });
 
 
 // Rota para login
 app.post('/login', (req, res) => {
-
   const { email, senha } = req.body;
 
   if (!email || !senha) {
@@ -88,7 +88,6 @@ app.post('/login', (req, res) => {
     }
 
     const user = results[0];
-
 
     bcrypt.compare(senha, user.senha, (err, result) => {
       if (err) {
@@ -167,6 +166,28 @@ app.post('/logout', (req, res) => {
     }
     res.clearCookie('connect.sid'); // Limpa o cookie da sessão no navegador
     res.json({ message: 'Logout bem-sucedido!' });
+  });
+});
+
+//Rota para salvar as informaçoes de endereço do usuário
+app.post('/saveEndr', (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Usuário não autenticado.' });
+  }
+
+  const { street, num, cep, neighbor, city } = req.body;
+  const userId = req.session.userId;
+
+  // Query para inserir o endereço
+  const addressQuery = 'INSERT INTO Address (id_address_user, rua, num_rua, cep, bairro, cidade) VALUES (?, ?, ?, ?, ?, ?)';
+
+  db.execute(addressQuery, [userId, street, num, cep, neighbor, city], (err, results) => {
+    if (err) {
+      console.error('Erro ao inserir endereço:', err);
+      return res.status(500).json({ error: 'Erro ao salvar endereço.' });
+    }
+
+    res.status(201).json({ message: 'Endereço salvo com sucesso' });
   });
 });
 
