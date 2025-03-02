@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(data => {
           alert(data.message); // Exibe mensagem de sucesso
           forms_login.reset();
-          window.location.href = '/profile';// Redireciona para a página de perfil
+          window.location.href = 'http://localhost:3000/profile'; // Redireciona para a página de perfil
         })
         .catch(error => {
           console.error('Erro:', error.message);

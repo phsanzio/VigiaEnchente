@@ -5,15 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d98f3bb-07e8-44bd-868c-fef32ede3b3d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/fc5d0c51-9656-42a2-be35-0893bd8ab0f1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/fc5d0c51-9656-42a2-be35-0893bd8ab0f1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bd.sql" beforeDir="false" afterPath="$PROJECT_DIR$/bd.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/profile.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/login.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/profile.js" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/profile.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/profile.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles/profile.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,6 +108,7 @@
       <workItem from="1740850494844" duration="956000" />
       <workItem from="1740859724614" duration="3237000" />
       <workItem from="1740919327977" duration="772000" />
+      <workItem from="1740929747535" duration="1028000" />
     </task>
     <servers />
   </component>

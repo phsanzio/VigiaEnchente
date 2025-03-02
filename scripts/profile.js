@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(data => {
                 alert(data.message); // Exibe mensagem de logout bem-sucedido
-                window.location.href = '/login'; // Redireciona para a página de login
+                window.location.href = '/profile'; // Redireciona para a página de login
             })
             .catch(error => {
                 console.error('Erro ao fazer logout:', error.message);
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Máscara do CEP
     $(document).ready(function () {
-        $("#cep").mask("99999-999");
+        $("#cep").mask("99999999");
     });
 
     // Uso da API dos Correios

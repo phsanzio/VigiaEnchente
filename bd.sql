@@ -9,18 +9,18 @@ create table if not exists Users (
     senha varchar(255) NOT NULL
 );
 
-create table if not exists Address (
-    id_address int AUTO_INCREMENT,
-    id_address_user int(11),
-    foreign key (id_address_user) references Users(id_user) 
+DROP TABLE IF EXISTS Address;
+CREATE TABLE Address (
+    id_address INT AUTO_INCREMENT PRIMARY KEY,
+    id_address_user INT(11) UNIQUE,
+    FOREIGN KEY (id_address_user) REFERENCES Users(id_user)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-    rua varchar(45),
-    num_rua varchar(45),
-    cep varchar(8),
-    bairro varchar(45),
-    cidade varchar(45),
-    primary key (id_address, id_address_user)
+    rua VARCHAR(45),
+    num_rua VARCHAR(45),
+    cep VARCHAR(8),
+    bairro VARCHAR(45),
+    cidade VARCHAR(45)
 );
 
 create table if not exists Phone (

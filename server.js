@@ -40,7 +40,7 @@ app.use(session({
   resave: false, // Não salva a sessão se nada foi modificado
   saveUninitialized: true, // Salva sessões não inicializadas
   cookie: { maxAge: 3600000 },
-  secure: true,
+  secure: false,
   httpOnly: true,
   sameSite: 'strict' 
 }));
@@ -155,7 +155,7 @@ app.get('/usuario', (req, res) => {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    res.json(results[0]); // Retorna os dados do usuário como JSON
+    res.json(results[0]); // Retorna os dados do usuário
   });
 });
 
