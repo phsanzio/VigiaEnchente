@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VigiaEnchente</title>
   <link rel="stylesheet" href="styles/profile.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+  <script src="scripts/profile.js"></script>
 </head>
 <body>
   <div class="blur"></div>
@@ -25,6 +25,7 @@
         <div class="infos">
           <img src="images/user-icon.png" alt="">
           <p class="name-user">Nome</p>
+          <button><img src="images/editar-icon.png" alt="" id="edit_icon"></button>
         </div>
 
         <div class="infos">
@@ -39,43 +40,13 @@
 
         <hr>
 
-        <div class="containerCep">
-          <form action="#" onsubmit="return false" class="col s12">
-            <div class="row">
-              <div class="input-field col s6">
-                <input type="tel" placeholder="Informe o CEP" id="cep" name="cep" autofocus>
-                <label for="cep" class="active">CEP</label>
-              </div>
-              <div class="input-field col s6">
-                <input type="text" placeholder="UF" name="uf" id="uf">
-                <label for="uf" class="active">UF</label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="input-field col s6">
-                <input type="text" placeholder="Informe a Cidade" id="cidade" name="cidade">
-                <label for="cidade" class="active">Cidade</label>
-              </div>
-              <div class="input-field col s6">
-                <input type="text" placeholder="Informe o Bairro" name="bairro" id="bairro">
-                <label for="bairro" class="active">Bairro</label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="input-field col s8">
-                <input type="text" placeholder="Informe o seu Endereço" name="endereco" id="endereco">
-                <label for="endereco" class="active">Endereço</label>
-              </div>
-
-              <div class="input-field col s4">
-                <input type="text" placeholder="Informe o Número do Endereço" name="nr_end" id="nr_end">
-                <label for="nr_end" class="active">Número</label>
-              </div>
-            </div>
-          </form>
+        <div class="infos">
+          <p>Endereço:</p>
         </div>
 
-        <button class="saveInfos" type="submit">Salvar Alterações</button>
+        <hr>
+
+        <button type="submit">Salvar Alterações</button>
       </div>
 
       <div class="rightpanel">
@@ -90,8 +61,6 @@
     </div>
 
   </div>
-  <script src="https://code.jquery.com/jquery-3.0.0.min.js" type="text/javascript"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.4.1/jquery.maskedinput.js" type="text/javascript"></script>
-  <script src="scripts/profile.js"></script>
+
 </body>
 </html>

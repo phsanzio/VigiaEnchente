@@ -9,8 +9,7 @@ create table if not exists Users (
     senha varchar(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS Address;
-CREATE TABLE Address (
+create table Address (
     id_address INT AUTO_INCREMENT PRIMARY KEY,
     id_address_user INT(11) UNIQUE,
     FOREIGN KEY (id_address_user) REFERENCES Users(id_user)
@@ -57,3 +56,4 @@ create table if not exists Alert (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
+ 

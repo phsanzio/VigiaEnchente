@@ -18,8 +18,8 @@ const port = 3000;
 // Conexão com o banco de dados MySQL
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'abade',
-  password: 'Raphaell1@',
+  user: 'root',
+  password: '',
   database: 'VigiaEnchente'
 });
 
