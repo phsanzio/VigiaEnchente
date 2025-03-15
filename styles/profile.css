@@ -107,7 +107,6 @@ body {
 #edit_icon{
   width: 20px;
   height: 20px;
-  margin-left: 15px;
 }
 
 .name-user{
@@ -148,4 +147,16 @@ button{
   border: none;
   background-color: rgba(255, 255, 255, 0.144);
   align-items: center;
+}
+
+.button-edit{
+  background: none;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  margin-left: 15px;
+  margin-top: 0px;
 }
