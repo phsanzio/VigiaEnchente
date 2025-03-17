@@ -97,3 +97,50 @@ body {
   border-radius: 30px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
 }
+
+/* Card de Tempo */
+
+.weather{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.weather-title{
+  text-align: center;
+  margin-top: 5px;
+  font-weight: 600;
+}
+
+.temp{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #5a7cdc, #606dde);
+  border-radius: 20px;
+  padding: 20px;
+}
+
+.temp-img{
+  filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+}
+
+.temp_value{
+  font-weight: bold;
+  font-size: 40px;
+  line-height: 55px;
+}
+
+.temp_description{
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.infos-temp{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
