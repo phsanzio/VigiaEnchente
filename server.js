@@ -144,20 +144,44 @@ app.get('/usuario', (req, res) => {
     return res.status(401).json({ error: 'Usuário não autenticado.' });
   }
 
-  const query = 'SELECT nome, email, phone FROM Users WHERE id_user = ?';
-  db.execute(query, [req.session.userId], (err, results) => {
+  // Query para buscar dados do usuário
+  const userQuery = 'SELECT nome, email, phone FROM Users WHERE id_user = ?';
+  
+  db.execute(userQuery, [req.session.userId], (err, userResults) => {
     if (err) {
       console.error('Erro ao buscar dados do usuário:', err);
       return res.status(500).json({ error: 'Erro ao buscar dados do usuário.' });
     }
 
-    if (results.length === 0) {
+    if (userResults.length === 0) {
       return res.status(404).json({ error: 'Usuário não encontrado.' });
     }
 
-    res.json(results[0]); // Retorna os dados do usuário
+    // Buscar o endereço do usuário
+    const addressQuery = 'SELECT rua, num_rua, cep, bairro, cidade FROM Address WHERE id_address_user = ?';
+    
+    db.execute(addressQuery, [req.session.userId], (err, addressResults) => {
+      if (err) {
+        console.error('Erro ao buscar endereço do usuário:', err);
+        // Mesmo com erro no endereço, retornamos os dados básicos do usuário
+        return res.json(userResults[0]);
+      }
+
+      // Combinamos os resultados
+      const userData = userResults[0];
+      
+      // Se o usuário tiver um endereço cadastrado
+      if (addressResults.length > 0) {
+        userData.endereco = addressResults[0];
+      } else {
+        userData.endereco = null;
+      }
+
+      res.json(userData);
+    });
   });
 });
+
 
 app.post('/logout', (req, res) => {
   req.session.destroy(err => {
@@ -178,18 +202,43 @@ app.post('/saveEndr', (req, res) => {
   const { street, num, cep, neighbor, city } = req.body;
   const userId = req.session.userId;
 
-  // Query para inserir o endereço
-  const addressQuery = 'INSERT INTO Address (id_address_user, rua, num_rua, cep, bairro, cidade) VALUES (?, ?, ?, ?, ?, ?)';
-
-  db.execute(addressQuery, [userId, street, num, cep, neighbor, city], (err, results) => {
+  // Primeiro verificamos se o usuário já tem um endereço cadastrado
+  const checkQuery = 'SELECT id_address FROM Address WHERE id_address_user = ?';
+  
+  db.execute(checkQuery, [userId], (err, results) => {
     if (err) {
-      console.error('Erro ao inserir endereço:', err);
-      return res.status(500).json({ error: 'Erro ao salvar endereço.' });
+      console.error('Erro ao verificar endereço existente:', err);
+      return res.status(500).json({ error: 'Erro ao verificar endereço existente.' });
     }
 
-    res.status(201).json({ message: 'Endereço salvo com sucesso' });
+    if (results.length > 0) {
+      // Atualiza o endereço existente
+      const updateQuery = 'UPDATE Address SET rua = ?, num_rua = ?, cep = ?, bairro = ?, cidade = ? WHERE id_address_user = ?';
+      
+      db.execute(updateQuery, [street, num, cep, neighbor, city, userId], (err, updateResults) => {
+        if (err) {
+          console.error('Erro ao atualizar endereço:', err);
+          return res.status(500).json({ error: 'Erro ao atualizar endereço.' });
+        }
+        
+        return res.status(200).json({ message: 'Endereço atualizado com sucesso' });
+      });
+    } else {
+      // Insere um novo endereço
+      const insertQuery = 'INSERT INTO Address (id_address_user, rua, num_rua, cep, bairro, cidade) VALUES (?, ?, ?, ?, ?, ?)';
+      
+      db.execute(insertQuery, [userId, street, num, cep, neighbor, city], (err, insertResults) => {
+        if (err) {
+          console.error('Erro ao inserir endereço:', err);
+          return res.status(500).json({ error: 'Erro ao salvar endereço.' });
+        }
+        
+        return res.status(201).json({ message: 'Endereço salvo com sucesso' });
+      });
+    }
   });
 });
+
 
 // Iniciar o servidor
 app.listen(port, () => {
