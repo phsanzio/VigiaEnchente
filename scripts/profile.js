@@ -107,9 +107,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Vincula o botão "Salvar Alterações" à função saveInfosBD
-    const saveButton = document.querySelector('.save-address');
-    if (saveButton) {
-        saveButton.addEventListener('click', saveInfosBD);
+    const editForm = document.querySelector('.edit-form');
+    if (editForm) {
+        editForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+            saveInfosBD();
+        });
     }
 
     const editPopup = document.getElementById('edit-popup');

@@ -52,6 +52,16 @@ body {
   flex-direction: row;
 }
 
+.home-link {
+  color: inherit; /* Mantém a cor do texto do h1 */
+  text-decoration: none; /* Remove o sublinhado do link */
+  cursor: pointer;
+}
+
+.home-link:hover {
+  text-decoration: none; /* Mantém sem sublinhado mesmo ao passar o mouse */
+}
+
 .line-title{
   width: 100%;
   border-bottom: 3px solid rgba(255, 255, 255, 0.432);
