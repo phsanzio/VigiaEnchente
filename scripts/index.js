@@ -1,11 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const apiKey = '733da4642c26a47989b7d127dc1c9aac'; // Substitua pela sua chave da API OpenWeatherMap
-  const cidades = ["São Paulo", "Rio de Janeiro", "Belo Horizonte", "Salvador", "Fortaleza", "Curitiba", "Manaus", "Recife", "Porto Alegre", "Brasília"];
-
-  // Função para escolher uma cidade aleatória
-  function cidadeAleatoria() {
-    return cidades[Math.floor(Math.random() * cidades.length)];
-  }
+  const apiKey = '733da4642c26a47989b7d127dc1c9aac'; // Chave da API OpenWeatherMap
+  const cidadePadrao = "Salvador"; // Cidade usada se tudo falhar
+  const ipInfoToken = "d38fbda3ef6488"; // Insira seu token da ipinfo.io
 
   // Função para buscar o clima
   function buscarClima(cidade) {
@@ -21,6 +17,24 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
+  // Função para buscar localização pelo IP via ipinfo.io
+  function buscarCidadePorIP() {
+    fetch(`https://ipinfo.io/json?token=${ipInfoToken}`)
+      .then(response => {
+        if (!response.ok) throw new Error('Falha ao obter localização pelo IP');
+        return response.json();
+      })
+      .then(data => {
+        if (!data.city) throw new Error('Não foi possível determinar a localização pelo IP');
+        console.log(`Cidade detectada pelo IP: ${data.city}`);
+        buscarClima(data.city); // Usa a cidade detectada
+      })
+      .catch(() => {
+        console.log('Usando cidade padrão por falha na geolocalização.');
+        buscarClima(cidadePadrao); // Fallback para cidade padrão
+      });
+  }
+
   // Buscar os dados do usuário logado
   fetch('http://localhost:3000/usuario', {
     method: 'GET',
@@ -31,12 +45,17 @@ document.addEventListener('DOMContentLoaded', function () {
       return response.json();
     })
     .then(userData => {
-      const cidade = userData.endereco?.cidade || cidadeAleatoria();
-      buscarClima(cidade);
+      const cidade = userData.endereco?.cidade;
+      if (cidade) {
+        buscarClima(cidade);
+      } else {
+        console.log('Usuário sem endereço cadastrado. Buscando cidade pelo IP...');
+        buscarCidadePorIP();
+      }
     })
     .catch(() => {
-      console.log('Usuário não autenticado ou sem endereço. Exibindo clima de uma cidade aleatória.');
-      buscarClima(cidadeAleatoria());
+      console.log('Usuário não autenticado. Buscando cidade pelo IP...');
+      buscarCidadePorIP();
     });
 
   // Função para atualizar a UI com os dados do clima
