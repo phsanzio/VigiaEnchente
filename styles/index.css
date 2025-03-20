@@ -167,7 +167,7 @@ button:hover{
 
 .temp_value{
   font-weight: bold;
-  font-size: 40px;
+  font-size: 45px;
   line-height: 55px;
 }
 
@@ -213,8 +213,12 @@ button:hover{
 }
 
 .other_infos .info h2{
-  font-size: 12px;
+  font-size: 19px;
   font-weight: 600;
+}
+
+.other_infos .info p{
+  font-size: 18px;
 }
 
 .other_infos .info i{
@@ -231,7 +235,7 @@ button:hover{
   justify-content: start;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 25px;
   background-color: rgba(0, 87, 6, 0.2);
 }
 
@@ -263,6 +267,7 @@ button:hover{
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  gap: 5px;
 }
 
 .news-container p {
