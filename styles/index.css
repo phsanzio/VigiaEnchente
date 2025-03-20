@@ -167,7 +167,7 @@ button:hover{
 
 .temp_value{
   font-weight: bold;
-  font-size: 40px;
+  font-size: 45px;
   line-height: 55px;
 }
 
@@ -213,8 +213,12 @@ button:hover{
 }
 
 .other_infos .info h2{
-  font-size: 12px;
+  font-size: 19px;
   font-weight: 600;
+}
+
+.other_infos .info p{
+  font-size: 18px;
 }
 
 .other_infos .info i{
@@ -231,7 +235,8 @@ button:hover{
   justify-content: start;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
+
   background-color: rgba(0, 87, 6, 0.2);
 }
 
@@ -242,4 +247,41 @@ button:hover{
 .alert img{
   width: 102px;
   height: 126px;
+}
+
+/* Card de noticias */
+
+.news {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+}
+
+.news h2{
+  margin-top: 5px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.news-container {
+  display: flex;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.news-container p {
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+}
+
+.news-container a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.news-container a:hover {
+  text-decoration: underline;
 }
