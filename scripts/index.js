@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const apiKey = '733da4642c26a47989b7d127dc1c9aac'; // Chave da API OpenWeatherMap
-  const cidadePadrao = "Salvador"; // Cidade usada se tudo falhar
-  const ipInfoToken = "d38fbda3ef6488"; // Insira seu token da ipinfo.io
+  const apiKey = '733da4642c26a47989b7d127dc1c9aac'; 
+  const cidadePadrao = "Salvador"; 
+  const ipInfoToken = "d38fbda3ef6488"; 
 
-  // Função para buscar o clima
+
   function buscarClima(cidade) {
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cidade},br&units=metric&lang=pt_br&appid=${apiKey}`)
       .then(response => {
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  // Função para buscar localização pelo IP via ipinfo.io
+
   function buscarCidadePorIP() {
     fetch(`https://ipinfo.io/json?token=${ipInfoToken}`)
       .then(response => {
@@ -27,15 +27,15 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(data => {
         if (!data.city) throw new Error('Não foi possível determinar a localização pelo IP');
         console.log(`Cidade detectada pelo IP: ${data.city}`);
-        buscarClima(data.city); // Usa a cidade detectada
+        buscarClima(data.city);
       })
       .catch(() => {
         console.log('Usando cidade padrão por falha na geolocalização.');
-        buscarClima(cidadePadrao); // Fallback para cidade padrão
+        buscarClima(cidadePadrao); 
       });
   }
 
-  // Buscar os dados do usuário logado
+ 
   fetch('http://localhost:3000/usuario', {
     method: 'GET',
     credentials: 'include'
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
       buscarCidadePorIP();
     });
 
-  // Função para atualizar a UI com os dados do clima
+  
   function updateWeatherUI(data) {
     if (data.error) {
       document.querySelector('.weather-title').textContent = 'Erro';

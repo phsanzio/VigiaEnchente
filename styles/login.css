@@ -18,6 +18,18 @@ body {
   width: 100%;
 }
 
+button:hover{
+  transform: scale(1.05);
+}
+
+input:hover{
+  transform: scale(1.05);
+}
+
+.title:hover{
+  transform: scale(1.05);
+}
+
 .blur{
   height: 70%;
   width: 70%;
