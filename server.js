@@ -19,7 +19,7 @@ const port = 3000;
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'livia',
   database: 'VigiaEnchente'
 });
 

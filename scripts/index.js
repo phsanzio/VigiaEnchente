@@ -83,3 +83,121 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelector('.info:last-child .temp_max').textContent = `${windSpeed} km/h`;
   }
 });
+
+document.addEventListener('DOMContentLoaded', async function () {
+      async function fetchFloodData() {
+        const url = "https://flood-api.open-meteo.com/v1/flood";
+        const params = new URLSearchParams({
+            latitude: 59.9,
+            longitude: 10.75,
+            daily: "river_discharge",
+            models: "forecast_v4",
+            start_date: "2025-03-18",
+            end_date: "2025-03-20"
+        });
+    
+        try {
+            const response = await fetch(`${url}?${params}`);
+            if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
+            
+            const data = await response.json();
+            let dados = await processFloodData(data);
+            if(dados != null){
+                return dados;
+            }
+        } catch (error) {
+            console.error("Erro ao buscar dados de inundação:", error);
+        }
+      }
+  
+  function processFloodData(data) {
+    if (!data || !data.daily) {
+      console.log("Nenhum dado disponível.");
+      return;
+    }
+
+    console.log(`Coordenadas: ${data.latitude}°N, ${data.longitude}°E`);
+    console.log(`Fuso Horário: ${data.timezone} (${data.timezone_abbreviation})`);
+    console.log(`Diferença para GMT+0: ${data.utc_offset_seconds} s`);
+    console.log(`Unidade de Medida: ${data.daily_units.river_discharge}`);
+    
+    const dates = data.daily.time;
+    const riverDischarge = data.daily.river_discharge;
+    
+    let dados = []; 
+    console.log("Dados de descarga do rio:");
+    dates.forEach((date, index) => {
+        console.log(`${date}: ${riverDischarge[index]} m³/s`);
+        dados.push(riverDischarge[index]);
+    });
+    return dados;
+}
+
+async function isFlood(){
+  const estados = ['baixo', 'medio', 'alto'];
+  let dadosRio = [];
+  dadosRio = await fetchFloodData();
+
+  let estado = null;
+  let mediaElevacaoRio = 0;
+  let variacaoElevacaoRio = 0;
+
+  if(dadosRio.length != 0){
+    let soma = 0;
+    soma = dadosRio[0] + dadosRio[1] + dadosRio[2];
+    mediaElevacaoRio = (soma/3).toFixed(2);
+    console.log(mediaElevacaoRio);
+  }
+
+  if(dadosRio.length != 0){
+    let variacao = 0;
+    variacao = (dadosRio[2] - dadosRio[0]).toFixed(2);
+    variacaoElevacaoRio = variacao;
+    console.log(variacaoElevacaoRio);
+  }
+
+  if(mediaElevacaoRio<5){
+      if(variacaoElevacaoRio>3){
+        estado = estados[1];
+      }else if(variacaoElevacaoRio<-3){
+        estado = estados[0];
+      }else{
+        estado = estados[0];
+      }
+  }else if(mediaElevacaoRio<10){
+      if(variacaoElevacaoRio>3){
+        estado = estados[2];
+      }else if(variacaoElevacaoRio<-3){
+        estado = estados[1];
+      }else{
+        estado = estados[1];
+      }
+  }else{
+    estado = estados[2];//alto
+  }
+  
+  return estado;
+}
+
+  async function updateAlert(){
+    let estado = await isFlood();
+    if(estado == 'baixo'){
+      document.getElementById("alert").textContent = "Não há risco de enchente";
+      document.getElementById('shield').src = 'images/shield_green.png';
+      var alertElement = document.querySelector('.alert');
+      alertElement.style.backgroundColor = 'rgba(0, 87, 6, 0.2)';
+    }else if(estado == 'medio'){
+      document.getElementById("alert").textContent = "Risco médio de enchente";
+      document.getElementById('shield').src = 'images/shield_yellow.png';
+      var alertElement = document.querySelector('.alert');
+      alertElement.style.backgroundColor = 'rgba(87, 78, 0, 0.2)';
+    }else{
+      document.getElementById("alert").textContent = "Risco alto de enchente";
+      document.getElementById('shield').src = 'images/shield_red.png';
+      var alertElement = document.querySelector('.alert');
+      alertElement.style.backgroundColor = 'rgba(87, 20, 0, 0.2)';
+    }
+  }
+
+  await updateAlert();
+});
