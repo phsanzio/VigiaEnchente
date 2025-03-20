@@ -82,4 +82,43 @@ document.addEventListener('DOMContentLoaded', function () {
     const windSpeed = Math.round(data.wind.speed * 3.6);
     document.querySelector('.info:last-child .temp_max').textContent = `${windSpeed} km/h`;
   }
+
+  const newsApiKey = "70be492766714d8cbf00ad8ada64f751"; // Sua chave da NewsAPI
+  const newsContainer = document.querySelector(".news-container"); // Div onde será exibida a notícia
+
+  function buscarNoticias() {
+    const query = 'risco de enchente';  // Ajustando a consulta para ser mais específica sobre eventos climáticos
+    // Fazendo a requisição para a API
+    fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=pt&apiKey=${newsApiKey}`)
+      .then(response => {
+        if (!response.ok) throw new Error("Erro ao buscar notícias");
+        return response.json();
+      })
+      .then(data => {
+        if (!data.articles.length) throw new Error("Nenhuma notícia encontrada");
+
+        // Seleciona as duas notícias mais recentes
+        const articles = data.articles.slice(0, 2); // Pega as duas primeiras notícias
+
+        // Exibe as manchetes com o link "Leia mais"
+        let headlines = '';
+        articles.forEach(article => {
+          headlines += `
+            <p><strong>${article.title}</strong></p>
+            <a href="${article.url}" target="_blank">Leia mais</a>
+          `;
+        });
+
+        newsContainer.innerHTML = headlines;
+      })
+      .catch(error => {
+        console.error("Erro ao buscar notícia:", error);
+        newsContainer.innerHTML = "<p>Não foi possível carregar notícias.</p>";
+      });
+  }
+
+  // Buscar notícias ao carregar a página
+  buscarNoticias();
+
+
 });

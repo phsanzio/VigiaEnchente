@@ -243,3 +243,39 @@ button:hover{
   width: 102px;
   height: 126px;
 }
+
+/* Card de noticias */
+
+.news {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+}
+
+.news h2{
+  margin-top: 5px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.news-container {
+  display: flex;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.news-container p {
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+}
+
+.news-container a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.news-container a:hover {
+  text-decoration: underline;
+}
