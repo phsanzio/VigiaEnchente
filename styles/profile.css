@@ -86,6 +86,7 @@ body {
   width: 65%;
   height: 100%;
   padding: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .rightpanel{
@@ -97,6 +98,7 @@ body {
   width: 25%;
   height: 100%;
   padding: 10px;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .infos{
