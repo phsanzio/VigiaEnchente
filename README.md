@@ -49,7 +49,7 @@ O VigiaEnchente é uma portal web para compartilhar informações sobre inundaç
 
 ## Contribuindo
 
-Contribuições são bem-vindas! Por favor, faça um fork do repositório e crie um pull request com suas mudanças. Certifique-se de seguir o código de conduta.
+Contribuições são bem-vindas! Por favor, faça um fork do repositório e crie um pull request com suas mudanças.
 
 
 ## Contato
