@@ -123,6 +123,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
+function getData() {
+  const start_date = new Date();
+  console.log(dataAtual);
+  const dataAtual = new Date();
+  const dia = String(dataAtual.getDate()).padStart(2, '0');
+  const mes = String(dataAtual.getMonth() + 1).padStart(2, '0'); // Janeiro é 0!
+  const ano = dataAtual.getFullYear();
+
+  const dataFormatada = ${dia}/${mes}/${ano};
+  console.log(dataFormatada); // Exemplo de saída: 20/03/2025
+}
+
+
 document.addEventListener('DOMContentLoaded', async function () {
       async function fetchFloodData() {
         const url = "https://flood-api.open-meteo.com/v1/flood";
