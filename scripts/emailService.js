@@ -11,8 +11,8 @@ async function sendConfirmationMessage(name, email) {
     // url: "https://api.eu.mailgun.net/v3"
   });
   try {
-    const data = await mg.messages.create("sandboxb95b89380cff4145bd5a640e5d7c8d96.mailgun.org", {
-      from: "Mailgun Sandbox <postmaster@sandboxb95b89380cff4145bd5a640e5d7c8d96.mailgun.org>",
+    const data = await mg.messages.create("sandboxb8963eb08f6c43918762d2f4b6494fe1.mailgun.org", {
+      from: "Mailgun Sandbox <postmaster@sandboxb8963eb08f6c43918762d2f4b6494fe1.mailgun.org>",
       to: [email],
       subject: name + ", seu cadastro no VigiaEnchente foi concluído",
       text: name + "," + "\n\nSua conta foi criada com sucesso, e está apta a receber notificações.\n\nVigiaEnchente",
