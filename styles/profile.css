@@ -33,6 +33,7 @@ input:hover{
 .blur{
   height: 70%;
   width: 70%;
+  max-width: 1200px;
   backdrop-filter: blur(10px);
   position: absolute;
   z-index: 0;
@@ -43,6 +44,7 @@ input:hover{
   height: 70%;
   z-index: 1;
   width: 70%;
+  max-width: 1200px;
   gap: 10px;
   display: flex;
   flex-direction: column;
