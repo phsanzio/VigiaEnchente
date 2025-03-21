@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { error } = require('console');
 const cors = require('cors');
+const { sendConfirmationMessage } = require('./scripts/emailService.js');
 
 const app = express();
 const corsOptions = {
@@ -19,7 +20,7 @@ const port = 3000;
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'livia',
+  password: '',
   database: 'VigiaEnchente'
 });
 
@@ -133,6 +134,8 @@ app.post('/cadastro', (req, res) => {
         }
         return res.status(500).json({ error: 'Erro ao cadastrar o usuário.' });
       }
+
+      sendConfirmationMessage(nome, email);
 
       res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
     });
