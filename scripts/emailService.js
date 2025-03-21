@@ -2,10 +2,11 @@ const FormData = require('form-data');
 const Mailgun = require('mailgun.js');
 
 async function sendConfirmationMessage(name, email) {
+  const apiKey = "";
   const mailgun = new Mailgun(FormData);
   const mg = mailgun.client({
     username: "api",
-    key: process.env.API_KEY || "22ca8000bc35950b03cdfe5f78ef23d1-3d4b3a2a-2a24eb68",
+    key: process.env.API_KEY || apiKey,
     // When you have an EU-domain, you must specify the endpoint:
     // url: "https://api.eu.mailgun.net/v3"
   });
