@@ -1,11 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Catamaran:wght@100..900&display=swap');
 
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Catamaran", serif;
+  color: #fff;
 }
 
 body {
@@ -16,7 +16,7 @@ body {
   align-items: center;
   flex-direction: column;
   min-height: 100vh;
-  padding: ;
+  padding: 20px;
 }
 
 button:hover{
@@ -30,17 +30,20 @@ button:hover{
 .blur{
   height: 70%;
   width: 70%;
+  max-width: 1200px;
   backdrop-filter: blur(10px);
   position: absolute;
   z-index: 0;
   filter: drop-shadow(10px 0px black);
+  border-radius: 10px;
 }
 
 .container {
   height: 70%;
   z-index: 1;
   width: 70%;
-  gap: 10px;
+  max-width: 1200px;
+  gap: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -80,13 +83,13 @@ button:hover{
 }
 
 .home-link {
-  color: inherit; /* Mantém a cor do texto do h1 */
-  text-decoration: none; /* Remove o sublinhado do link */
+  color: inherit;
+  text-decoration: none;
   cursor: pointer;
 }
 
 .home-link:hover {
-  text-decoration: none; /* Mantém sem sublinhado mesmo ao passar o mouse */
+  text-decoration: none;
 }
 
 .line-title{
@@ -94,34 +97,33 @@ button:hover{
   border-bottom: 3px solid rgba(255, 255, 255, 0.432);
 }
 
-.cards{
+.cards {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr); /* Força 2 colunas por padrão */
   justify-content: center;
-  align-items: center;
-  gap: 5vh;
-  width: 50vw;
-  height: 100%;
+  align-items: stretch;
+  gap: 20px;
+  width: 100%;
   padding: 10px;
-  overflow: hidden; 
+  height: 90%;
 }
-
 
 .infocard{
   border: 2px solid white;
   border-radius: 30px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-  width: 2vw;
-  height: 2vw;
+  width: 100%;
+  height: 90%;
+  min-height: 200px;
   background-color: rgba(0, 0, 0, 0.2);
   overflow: hidden; 
+  display: flex;
+  flex-direction: column;
 }
 
 /* Card de Tempo */
 
 .weather{
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -130,6 +132,7 @@ button:hover{
   text-align: center;
   margin-top: 5px;
   font-weight: 600;
+  font-size: 2rem;
 }
 
 .temp{
@@ -137,22 +140,24 @@ button:hover{
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  /* background: linear-gradient(90deg, #5a7cdc, #606dde); */
   border-radius: 20px;
   padding: 20px;
 }
 
 .temp-img{
   filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.2));
+  max-width: 100px;
+  height: auto;
 }
 
 .temp_value{
   font-weight: bold;
-  font-size: 45px;
-  line-height: 55px;
+  font-size: 4rem;
+  line-height: 1.2;
 }
 
 .temp_description{
+  font-size: 1.5rem;
   font-weight: 500;
   text-transform: capitalize;
 }
@@ -167,7 +172,6 @@ button:hover{
 /* Card de mais infos */
 
 .more-infos{
-  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -176,9 +180,10 @@ button:hover{
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  width: 90%;
-  height: 90%;
+  width: 100%;
+  height: 100%;
   align-content: center;
+  padding: 10px;
 }
 
 .other_infos .info{
@@ -187,78 +192,78 @@ button:hover{
   justify-content: start;
   padding: 4px 10px;
   border-radius: 8px;
-  /* box-shadow: 0pc 0px 5px rgba(0, 0, 0, 0.2); */
   gap: 10px;
   width: 100%;
   height: 100%;
 }
 
 .other_infos .info h2{
-  font-size: 19px;
+  font-size: 1.7rem;
   font-weight: 600;
 }
 
 .other_infos .info p{
-  font-size: 18px;
+  font-size: 1.6rem;
 }
 
 .other_infos .info i{
   text-align: center;
-  font-size: 20px;
+  font-size: 1.5rem;
   width: 20%;
 }
 
 /* Card de Alerta */
 
 .alert{
-  display: flex;
   text-align: center;
-  justify-content: start;
+  justify-content: center;
   flex-direction: column;
   align-items: center;
-  gap: 25px;
-
+  gap: 20px;
   background-color: rgba(0, 87, 6, 0.2);
+  padding: 20px;
 }
 
 .alert h2{
-  margin-top: 20px;
+  font-size: 2rem;
+  margin-top: 10px;
 }
 
 .alert img{
-  width: 102px;
-  height: 126px;
+  max-width: 100px;
+  height: auto;
 }
 
 /* Card de noticias */
 
 .news {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  padding: 8px;
+  padding: 0px 5px;
 }
 
 .news h2{
   margin-top: 5px;
-  font-size: 18px;
+  font-size: 1.5rem;
   text-align: center;
 }
 
 .news-container {
   display: flex;
-  margin-top: 10px;
+  margin-top: 5px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
 }
 
 .news-container p {
-  font-size: 14px;
+  font-size: 0.9rem;
   color: #fff;
   text-align: center;
 }
 
 .news-container a {
+  font-size: 0.9rem;
   color: #fff;
   text-decoration: none;
 }
@@ -267,15 +272,125 @@ button:hover{
   text-decoration: underline;
 }
 
+@media (max-width: 1500px){
+  .other_infos .info h2{
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+  
+  .other_infos .info p{
+    font-size: 1.5rem;
+  }
+  
+  .other_infos .info i{
+    text-align: center;
+    font-size: 1.5rem;
+    width: 20%;
+  }
+}
+
+@media (max-width: 1300px){
+  .container {
+    height: 90%;
+  }
+
+  .blur{
+    height: 90%;
+  }
+
+  .cards{
+    height: 85%;
+    padding: 0px;
+  }
+
+  .alert{
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .alert h2{
+    margin-top: 5px;
+  }
+
+  .other_infos .info h2{
+    font-size: 1em;
+    font-weight: 600;
+  }
+  
+  .other_infos .info p{
+    font-size: 1rem;
+  }
+  
+  .other_infos .info i{
+    text-align: center;
+    font-size: 1rem;
+    width: 20%;
+  }
+
+  .news-container{
+    height: 70%;
+    margin-top: 0px;
+    gap: 5px;
+  }
+
+  .news{
+    padding: 5px;
+    gap: 8px;
+  }
+
+  .news h2{
+    font-size: 1.2rem;
+    margin-top: 0px;
+  }
+
+  .news-container p{
+    font-size: 0.8rem;
+  }
+
+  .news-container a{
+    font-size: 0.8rem;
+  }
+
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .infocard{
+    height: 80%;
+    min-height: 160px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .other_infos{
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .temp_value {
+    font-size: 2rem;
+  }
+
+}
+
 @media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
   .container {
     width: 100%;
-    padding: 5px;
+    padding: 10px;
   }
 
   .title {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    gap: 10px;
   }
 
   .button-userlogin {
@@ -283,15 +398,18 @@ button:hover{
   }
 
   .temp_value {
-    font-size: 30px;
-    line-height: 40px;
+    font-size: 1.8rem;
   }
 
   .other_infos .info h2 {
-    font-size: 16px;
+    font-size: 0.9rem;
   }
 
   .other_infos .info p {
-    font-size: 14px;
+    font-size: 0.8rem;
+  }
+
+  .other_infos .info i {
+    font-size: 1rem;
   }
 }
