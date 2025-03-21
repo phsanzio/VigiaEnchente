@@ -1,3 +1,4 @@
+-- drop database VigiaEnchente;
 create database IF not exists VigiaEnchente;
 use VigiaEnchente;
 
