@@ -273,20 +273,78 @@ button:hover{
 }
 
 @media (max-width: 1500px){
+
+  .container {
+    height: 78%;
+  }
+
+  .blur{
+    height: 78%;
+  }
+
   .other_infos .info h2{
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 600;
   }
   
   .other_infos .info p{
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
   
   .other_infos .info i{
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     width: 20%;
   }
+
+  .alert h2{
+    font-size: 1.5rem;
+  }
+
+  .alert{
+    padding: 15px;
+  }
+
+  .alert img{
+    margin-bottom: 10px;
+  }
+
+  .news-container{
+    height: 70%;
+    margin-top: 0px;
+    gap: 5px;
+  }
+
+  .news{
+    padding: 5px;
+    gap: 8px;
+  }
+
+  .news h2{
+    font-size: 1.2rem;
+    margin-top: 0px;
+  }
+
+  .news-container p{
+    font-size: 0.8rem;
+  }
+
+  .news-container a{
+    font-size: 0.8rem;
+  }
+
+  .weather-title{
+    font-size: 1.5rem;
+  }
+
+  .temp_value{
+    font-size: 3.2rem;
+  }
+
+  .temp_description{
+    font-size: 1.2rem;
+  }
+
 }
 
 @media (max-width: 1300px){
