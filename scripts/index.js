@@ -123,29 +123,34 @@ document.addEventListener('DOMContentLoaded', function () {
 
 });
 
-// function getData() {
-//   const start_date = new Date();
-//   console.log(dataAtual);
-//   const dataAtual = new Date();
-//   const dia = String(dataAtual.getDate()).padStart(2, '0');
-//   const mes = String(dataAtual.getMonth() + 1).padStart(2, '0'); // Janeiro é 0!
-//   const ano = dataAtual.getFullYear();
-
-//   const dataFormatada = ${dia}/${mes}/${ano};
-//   console.log(dataFormatada); // Exemplo de saída: 20/03/2025
-// }
+function formatarDataAtual() {
+  const dataAtual = new Date();
+  const ano = dataAtual.getFullYear();
+  const mes = String(dataAtual.getMonth() + 1).padStart(2, '0');
+  const dia = String(dataAtual.getDate()).padStart(2, '0');
+  let datas = [];
+  let dia0 = dia-2;
+  datas[0] = `${ano}-${mes}-${dia0}`; //2 dias atrás
+  datas[1] = `${ano}-${mes}-${dia}`; //dia atual
+  datas.forEach(data => {
+    console.log(data);
+  })
+  return datas;
+}
 
 
 document.addEventListener('DOMContentLoaded', async function () {
       async function fetchFloodData() {
+        dataInicio = formatarDataAtual()[0];
+        dataFim = formatarDataAtual()[1];
         const url = "https://flood-api.open-meteo.com/v1/flood";
         const params = new URLSearchParams({
             latitude: 59.9,
             longitude: 10.75,
             daily: "river_discharge",
             models: "forecast_v4",
-            start_date: "2025-03-18",
-            end_date: "2025-03-20"
+            start_date: dataInicio,
+            end_date: dataFim
         });
     
         try {
