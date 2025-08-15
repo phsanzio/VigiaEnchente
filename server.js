@@ -7,6 +7,8 @@ const path = require('path');
 const { error } = require('console');
 const cors = require('cors');
 const { sendConfirmationMessage } = require('./scripts/emailService.js');
+const PushNotifications = require('node-pushnotifications');
+require('dotenv').config();
 
 const app = express();
 const corsOptions = {
@@ -20,7 +22,7 @@ const port = 3000;
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: process.env.DATABASE_PASSWORD,
   database: 'VigiaEnchente'
 });
 
@@ -45,6 +47,41 @@ app.use(session({
   httpOnly: true,
   sameSite: 'strict' 
 }));
+
+//mandar notificações pelo navegador
+
+const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
+const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
+
+app.post("/subscribe", (req, res) => {
+  const subscription = req.body;
+  const settings = {
+    web: {
+      vapidDetails: {
+        subject: process.env.EMAIL,
+        publicKey: publicVapidKey,
+        privateKey: privateVapidKey,
+      },
+      gcmAPIKey: "gcmkey",
+      TTL: 2419200,
+      contentEncoding: "aes128gcm",
+      headers: {},
+    },
+    isAlwaysUseFCM: false,
+  };
+
+  const push = new PushNotifications(settings);
+
+  const payload = { title: "VigiaEnchente"};
+  push.send(subscription, payload, (err, result) => {
+    if(err){
+      console.log(err);
+    }else{
+      console.log(result);
+    }
+  });
+});
+//mandar notificações pelo navegador
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

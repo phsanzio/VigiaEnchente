@@ -1,6 +1,6 @@
 const FormData = require('form-data');
 const Mailgun = require('mailgun.js');
-
+/*
 async function sendConfirmationMessage(name, email) {
   const apiKey = "";
   const mailgun = new Mailgun(FormData);
@@ -25,3 +25,4 @@ async function sendConfirmationMessage(name, email) {
 }
 
 module.exports = { sendConfirmationMessage };
+*/
