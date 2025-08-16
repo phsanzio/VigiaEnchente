@@ -8,6 +8,7 @@ const { error } = require('console');
 const cors = require('cors');
 const { sendConfirmationMessage } = require('./scripts/emailService.js');
 const PushNotifications = require('node-pushnotifications');
+const webpush = require('web-push');
 require('dotenv').config();
 
 const app = express();
@@ -74,14 +75,15 @@ app.post("/subscribe", (req, res) => {
 
   const payload = { title: "VigiaEnchente"};
   push.send(subscription, payload, (err, result) => {
-    if(err){
-      console.log(err);
-    }else{
-      console.log(result);
+    if (err) {
+      console.error('Push send error:', err);
+      return res.status(500).json({ error: 'Failed to send push' });
     }
+    console.log('Push send result:', result);
+    return res.status(201).json({ success: true, result });
   });
 });
-//mandar notificações pelo navegador
+//mandar notificações pelo navegador//
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

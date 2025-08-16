@@ -2,7 +2,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const apiKey = '733da4642c26a47989b7d127dc1c9aac'; 
   const cidadePadrao = "Sabará"; 
   const ipInfoToken = "d38fbda3ef6488";
-  const publicVapidKey = process.env.PUBLIC_VAPID_KEY; //index.js nao consegue pegar variavel do .env, põe a string hardcoded msm q roda :)
+  //const publicVapidKey = process.env.PUBLIC_VAPID_KEY; //index.js nao consegue pegar variavel do .env, põe a string hardcoded msm q roda :)
+  const publicVapidKey = 'BCQisdcMW1TRQT8VTGVM8Ds-hYNGOsNhsynqCBeDKrt-BJmKvy6iYrGkSgQoamQHp6xdFJY0zhzq4wMsGUIp7QY'
 
 // Check for service worker
 if ("serviceWorker" in navigator) {
