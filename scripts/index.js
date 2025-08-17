@@ -12,11 +12,30 @@ async function buscarClima(cidade) {
   return res.json();
 }
 
+async function buscarCoord(cidade) {
+  const url = `http://api.openweathermap.org/geo/1.0/direct?q=${cidade}&limit=1&appid=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Falha ao obter coordenadas por cidade.');
+  return res.json();
+}
+
 async function buscarCidadePorIP() {
   const res = await fetch(`https://ipinfo.io/json?token=${ipInfoToken}`);
-  if (!res.ok) throw new Error('Falha ao obter localização pelo IP');
+  if (!res.ok) throw new Error('Falha ao obter cidade pelo IP');
   const data = await res.json();
   return data.city || null;
+}
+
+async function buscarCoordPorIP() {
+  const res = await fetch(`https://ipinfo.io/json?token=${ipInfoToken}`);
+  if (!res.ok) throw new Error('Falha ao obter coordenadas pelo IP');
+  const data = await res.json();
+  if (!data.loc) return null;
+  const [latStr, lonStr] = data.loc.split(',').map(x => x.trim());
+  const lat = parseFloat(latStr);
+  const lon = parseFloat(lonStr);
+  if (Number.isNaN(lat) || Number.isNaN(lon)) throw new Error('Invalid coordinates');
+  return [lat, lon] || null;
 }
 
 async function buscarNoticias() {
@@ -37,7 +56,7 @@ function formatarDataAtual() {
   return [`${ano}-${mes}-${dia0}`, `${ano}-${mes}-${dia}`];
 }
 
-async function fetchFloodData(lat = 59.9, lon = 10.75) {
+async function fetchFloodData(lat, lon) {
   const [dataInicio, dataFim] = formatarDataAtual();
   const params = new URLSearchParams({
     latitude: lat,
@@ -51,6 +70,7 @@ async function fetchFloodData(lat = 59.9, lon = 10.75) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Erro na requisição de flood: ${res.status}`);
   const json = await res.json();
+  console.log(json);
   return processFloodData(json);
 }
 
@@ -60,7 +80,6 @@ function processFloodData(data) {
 }
 
 async function isFlood(lat, lon) {
-  const estados = ['baixo', 'medio', 'alto'];
   const dadosRio = await fetchFloodData(lat, lon).catch(() => []);
   if (!dadosRio || dadosRio.length < 3) return 'baixo';
   const soma = dadosRio[0] + dadosRio[1] + dadosRio[2];
@@ -80,7 +99,7 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
-async function sendPushSubscription() {
+async function sendPushSubscription(cidade, estado) {
   if (!('serviceWorker' in navigator)) return;
   try {
     // call register on the ServiceWorkerContainer so 'this' is correct
@@ -91,10 +110,18 @@ async function sendPushSubscription() {
       applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
     });
 
-    const estado = await isFlood(); // snapshot for payload
+    let cidadeResolved = cidade;
+    if (!cidadeResolved) {
+      try {
+        cidadeResolved = await buscarCidadePorIP();
+      } catch (e) {
+        cidadeResolved = cidadePadrao;
+      }
+    }
+
     const payload = {
       title: 'VigiaEnchente',
-      body: `Sabará: risco ${estado}`
+      body: `${cidadeResolved}: risco ${estado}`
     };
 
     await fetch("http://localhost:3000/subscribe", {
@@ -208,17 +235,35 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Flood alert and UI update
+  const coords = await buscarCoord(cidade);
+  let lat, lon;
+  if (Array.isArray(coords) && coords.length > 0) {
+    ({ lat, lon } = coords[0]); // take first result
+  } else {
+    // fallback to IP-based coords or a default
+    const ipCoords = await buscarCoordPorIP().catch(() => null);
+    if (ipCoords) {
+      [lat, lon] = ipCoords;
+    } else {
+      // choose an explicit default coordinate if needed
+      lat = -19.9208;
+      lon = -43.9378;
+    }
+  }
+  console.log(JSON.stringify(coords));
+  console.log(`${lat} / ${lon}`);
+  let estado = 'baixo';
   try {
-    const estado = await isFlood();
+    estado = await isFlood(lat, lon);
     updateAlertFromState(estado);
   } catch (err) {
     console.error('Erro ao calcular alerta de enchente:', err);
-    updateAlertFromState('baixo');
+    estado = 'baixo';
+    updateAlertFromState(estado);
   }
-
   // Register service worker and subscribe to push (run once)
   if ('serviceWorker' in navigator) {
-    sendPushSubscription().catch(err => console.error('Push registration failed:', err));
+    sendPushSubscription(cidade, estado).catch(err => console.error('Push registration failed:', err));
   }
 });
 

@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const { error } = require('console');
 const cors = require('cors');
-const { sendConfirmationMessage } = require('./scripts/emailService.js');
 const webpush = require('web-push');
 require('dotenv').config();
 
@@ -144,6 +143,7 @@ async function sendNotificationTo(subscriptionRow) {
   
   try {
     await webpush.sendNotification(sub, payload);
+    console.log(`Notif. enviada para:\n ${JSON.stringify(sub)}`)
     return true;
   } catch (err) {
     // If unsubscribed/expired, remove it from DB
@@ -268,7 +268,7 @@ app.post('/cadastro', (req, res) => {
         return res.status(500).json({ error: 'Erro ao cadastrar o usuário.' });
       }
 
-      sendConfirmationMessage(nome, email);
+      //sendConfirmationMessage(nome, email);
 
       res.status(201).json({ message: 'Usuário cadastrado com sucesso!' });
     });
