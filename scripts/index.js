@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const payload = {
       title: 'VigiaEnchente',
       body: `Sabará: risco ` + estado
-      // add any other fields you need
+      // other fields go here
     };
 
     await fetch("http://localhost:3000/subscribe", {

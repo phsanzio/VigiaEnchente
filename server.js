@@ -56,7 +56,9 @@ const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
 app.post("/subscribe", (req, res) => {
-  console.log('Incoming /subscribe body:', JSON.stringify(req.body)); // <--- debug
+  //console.log('Incoming /subscribe body:', JSON.stringify(req.body)); // <--- debug
+  console.log('Headers:', JSON.stringify(req.headers));
+  console.log('Raw body:', JSON.stringify(req.body)); // what the client actually posted
   let subscription = req.body && req.body.subscription ? req.body.subscription : req.body;
   const payloadObj = req.body && req.body.payload ? req.body.payload : { title: "VigiaEnchente", body: "Notif. padrao" };
   console.log('Resolved subscription:', !!subscription && subscription.endpoint ? subscription.endpoint : '<none>');
