@@ -11,6 +11,7 @@ const PushNotifications = require('node-pushnotifications');
 const webpush = require('web-push');
 require('dotenv').config();
 
+
 const app = express();
 const corsOptions = {
   origin: true, // Permite todas as origens
@@ -56,32 +57,34 @@ const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
 app.post("/subscribe", (req, res) => {
   const subscription = req.body;
-  const settings = {
-    web: {
-      vapidDetails: {
-        subject: process.env.EMAIL,
-        publicKey: publicVapidKey,
-        privateKey: privateVapidKey,
-      },
-      gcmAPIKey: "gcmkey",
-      TTL: 2419200,
-      contentEncoding: "aes128gcm",
-      headers: {},
-    },
-    isAlwaysUseFCM: false,
-  };
+  if (!subscription || !subscription.endpoint) {
+    return res.status(400).json({ error: 'Invalid subscription' });
+  }
 
-  const push = new PushNotifications(settings);
+  if (!publicVapidKey || !privateVapidKey) {
+    console.error('Missing VAPID keys');
+    return res.status(500).json({ error: 'Server VAPID keys not configured' });
+  }
 
-  const payload = { title: "VigiaEnchente"};
-  push.send(subscription, payload, (err, result) => {
-    if (err) {
-      console.error('Push send error:', err);
-      return res.status(500).json({ error: 'Failed to send push' });
-    }
-    console.log('Push send result:', result);
-    return res.status(201).json({ success: true, result });
-  });
+  // Configure VAPID (must match client public key)
+  webpush.setVapidDetails(
+    'mailto:'+process.env.EMAIL,
+    publicVapidKey,
+    privateVapidKey
+  );
+
+  // payload must be a string
+  const payload = JSON.stringify({ title: "VigiaEnchente", body: "Alerta de enchente" });
+
+  webpush.sendNotification(subscription, payload)
+    .then(response => {
+      console.log('Push enviado:', response);
+      return res.status(201).json({ success: true });
+    })
+    .catch(err => {
+      console.error('Erro ao enviar push:', err);
+      return res.status(500).json({ error: 'Falha ao enviar push' });
+    });
 });
 //mandar notificações pelo navegador//
 
