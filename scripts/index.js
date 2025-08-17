@@ -100,6 +100,7 @@ async function sendPushSubscription() {
     await fetch("http://localhost:3000/subscribe", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // <-- send session cookie so server can set user_id
       body: JSON.stringify({ subscription: sub, payload })
     });
 

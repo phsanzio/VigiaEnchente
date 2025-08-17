@@ -7,7 +7,6 @@ const path = require('path');
 const { error } = require('console');
 const cors = require('cors');
 const { sendConfirmationMessage } = require('./scripts/emailService.js');
-const PushNotifications = require('node-pushnotifications');
 const webpush = require('web-push');
 require('dotenv').config();
 
@@ -55,6 +54,18 @@ app.use(session({
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
+if (!publicVapidKey || !privateVapidKey) {
+  console.error('Missing VAPID keys');
+  return res.status(500).json({ error: 'Server VAPID keys not configured' });
+} else {
+  // Configure VAPID (must match client public key)
+  webpush.setVapidDetails(
+    'mailto:'+process.env.EMAIL,
+    publicVapidKey,
+    privateVapidKey
+  );
+}
+
 app.post("/subscribe", (req, res) => {
   //console.log('Incoming /subscribe body:', JSON.stringify(req.body)); // <--- debug
   console.log('Headers:', JSON.stringify(req.headers));
@@ -67,19 +78,30 @@ app.post("/subscribe", (req, res) => {
     return res.status(400).json({ error: 'Invalid subscription' });
   }
 
-  if (!publicVapidKey || !privateVapidKey) {
-    console.error('Missing VAPID keys');
-    return res.status(500).json({ error: 'Server VAPID keys not configured' });
-  }
+  // persist subscription in DB
+  const endpoint = subscription.endpoint;
+  const p256dh = subscription.keys?.p256dh || null;
+  const auth = subscription.keys?.auth || null;
+  const payloadJson = JSON.stringify(payloadObj);
+  const userId = req.session?.userId || null;
 
-  // Configure VAPID (must match client public key)
-  webpush.setVapidDetails(
-    'mailto:'+process.env.EMAIL,
-    publicVapidKey,
-    privateVapidKey
-  );
+  const upsertQuery = `
+    INSERT INTO Subscriptions (endpoint, p256dh, auth, user_id, payload)
+    VALUES (?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE p256dh = VALUES(p256dh), auth = VALUES(auth), user_id = VALUES(user_id), payload = VALUES(payload), updated_at = CURRENT_TIMESTAMP
+  `;
 
-  // payload must be a string
+  db.execute(upsertQuery, [endpoint, p256dh, auth, userId, payloadJson], (err) => {
+    if (err) {
+      console.error('Erro ao persistir subscription:', err);
+      return res.status(500).json({ error: 'Erro ao salvar subscription' });
+    }
+
+    // optionally send an immediate test notification here, or simply acknowledge
+    return res.status(201).json({ success: true, saved: true });
+  });
+
+  /* payload must be a string
   const payload = JSON.stringify(payloadObj);
 
   webpush.sendNotification(subscription, payload)
@@ -91,8 +113,71 @@ app.post("/subscribe", (req, res) => {
       console.error('Erro ao enviar push:', err);
       return res.status(500).json({ error: 'Falha ao enviar push' });
     });
+  */
 });
-//mandar notificações pelo navegador//
+
+//mandar notificações pelo navegador
+// Helper: send notification to one subscription object
+async function sendNotificationTo(subscriptionRow) {
+  const sub = {
+    endpoint: subscriptionRow.endpoint,
+    keys: {
+      p256dh: subscriptionRow.p256dh,
+      auth: subscriptionRow.auth
+    }
+  };
+
+  // Ensure payload is a string (web-push requires string or Buffer)
+  let payload;
+  if (subscriptionRow.payload == null) {
+    payload = JSON.stringify({ title: 'VigiaEnchente', body: 'Alerta padrão' });
+  } else if (typeof subscriptionRow.payload === 'string') {
+    payload = subscriptionRow.payload;
+  } else {
+    try {
+      payload = JSON.stringify(subscriptionRow.payload);
+    } catch (e) {
+      console.error('Failed to stringify payload, using default:', e);
+      payload = JSON.stringify({ title: 'VigiaEnchente', body: 'Alerta padrão' });
+    }
+  }
+  
+  try {
+    await webpush.sendNotification(sub, payload);
+    return true;
+  } catch (err) {
+    // If unsubscribed/expired, remove it from DB
+    const status = err && err.statusCode ? err.statusCode : null;
+    console.error('sendNotification error for', subscriptionRow.endpoint, err);
+    if (status === 410 || status === 404) {
+      db.execute('DELETE FROM Subscriptions WHERE endpoint = ?', [subscriptionRow.endpoint], (delErr) => {
+        if (delErr) console.error('Erro ao remover subscription inválida:', delErr);
+      });
+    }
+    return false;
+  }
+}
+
+// Periodic job: fetch all subscriptions and send payloads every 5 minutes
+async function periodicPushWorker() {
+  db.execute('SELECT endpoint, p256dh, auth, payload, user_id FROM Subscriptions', [], async (err, rows) => {
+    if (err) {
+      console.error('Erro ao buscar subscriptions:', err);
+      return;
+    }
+    for (const r of rows) {
+      // Optionally build a custom payload per user: query Address by r.user_id and call flood API
+      // For now use stored payload or default
+      await sendNotificationTo(r);
+    }
+  });
+}
+
+// start periodic job every 5 minutes (300000ms)
+setInterval(periodicPushWorker, 60 * 1000);
+
+// you may also trigger an immediate run on startup
+periodicPushWorker();
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
