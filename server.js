@@ -56,7 +56,11 @@ const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
 app.post("/subscribe", (req, res) => {
-  const subscription = req.body;
+  console.log('Incoming /subscribe body:', JSON.stringify(req.body)); // <--- debug
+  let subscription = req.body && req.body.subscription ? req.body.subscription : req.body;
+  const payloadObj = req.body && req.body.payload ? req.body.payload : { title: "VigiaEnchente", body: "Notif. padrao" };
+  console.log('Resolved subscription:', !!subscription && subscription.endpoint ? subscription.endpoint : '<none>');
+  console.log('Resolved payloadObj:', JSON.stringify(payloadObj)); // <--- debug
   if (!subscription || !subscription.endpoint) {
     return res.status(400).json({ error: 'Invalid subscription' });
   }
@@ -74,7 +78,7 @@ app.post("/subscribe", (req, res) => {
   );
 
   // payload must be a string
-  const payload = JSON.stringify({ title: "VigiaEnchente", body: "Alerta de enchente" });
+  const payload = JSON.stringify(payloadObj);
 
   webpush.sendNotification(subscription, payload)
     .then(response => {

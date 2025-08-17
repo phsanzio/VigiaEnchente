@@ -3,56 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const cidadePadrao = "Sabará"; 
   const ipInfoToken = "d38fbda3ef6488";
   //const publicVapidKey = process.env.PUBLIC_VAPID_KEY; //index.js nao consegue pegar variavel do .env, põe a string hardcoded msm q roda :)
-  const publicVapidKey = 'BCQisdcMW1TRQT8VTGVM8Ds-hYNGOsNhsynqCBeDKrt-BJmKvy6iYrGkSgQoamQHp6xdFJY0zhzq4wMsGUIp7QY'
 
-// Check for service worker
-if ("serviceWorker" in navigator) {
-  send().catch((err) => console.error(err));
-}
- 
-// Register SW, Register Push, Send Push
-async function send() {
-  // Register Service Worker
-  console.log("Registering service worker...");
-  const register = await navigator.serviceWorker.register("./sw.js", {
-    scope: "/",
-  });
-  console.log("Service Worker Registered...");
- 
-  // Register Push
-  console.log("Registering Push...");
-  const subscription = await register.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-  });
-  console.log("Push Registered...");
- 
-  // Send Push Notification
-  console.log("Sending Push...");
-  await fetch("http://localhost:3000/subscribe", {
-    method: "POST",
-    body: JSON.stringify(subscription),
-    headers: {
-      "content-type": "application/json",
-    },
-  });
-  console.log("Push Sent...");
-}
- 
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/\-/g, "+")
-    .replace(/_/g, "/");
- 
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
- 
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodeAt(i);
-  }
-  return outputArray;
-}
 
   function buscarClima(cidade) {
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cidade},br&units=metric&lang=pt_br&appid=${apiKey}`)
@@ -133,11 +84,11 @@ function urlBase64ToUint8Array(base64String) {
     document.querySelector('.info:last-child .temp_max').textContent = `${windSpeed} km/h`;
   }
 
-  const newsApiKey = "70be492766714d8cbf00ad8ada64f751"; // Sua chave da NewsAPI
+  const newsApiKey = "70be492766714d8cbf00ad8ada64f751"; // chave da NewsAPI
   const newsContainer = document.querySelector(".news-container"); // Div onde será exibida a notícia
 
   function buscarNoticias() {
-    const query = 'risco de enchente';  // Ajustando a consulta para ser mais específica sobre eventos climáticos
+    const query = 'risco de enchente';
     // Fazendo a requisição para a API
     fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&language=pt&apiKey=${newsApiKey}`)
       .then(response => {
@@ -190,32 +141,32 @@ function formatarDataAtual() {
 
 
 document.addEventListener('DOMContentLoaded', async function () {
-      async function fetchFloodData() {
-        dataInicio = formatarDataAtual()[0];
-        dataFim = formatarDataAtual()[1];
-        const url = "https://flood-api.open-meteo.com/v1/flood";
-        const params = new URLSearchParams({
-            latitude: 59.9,
-            longitude: 10.75,
-            daily: "river_discharge",
-            models: "forecast_v4",
-            start_date: dataInicio,
-            end_date: dataFim
-        });
-    
-        try {
-            const response = await fetch(`${url}?${params}`);
-            if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
-            
-            const data = await response.json();
-            let dados = await processFloodData(data);
-            if(dados != null){
-                return dados;
-            }
-        } catch (error) {
-            console.error("Erro ao buscar dados de inundação:", error);
+  async function fetchFloodData() {
+    dataInicio = formatarDataAtual()[0];
+    dataFim = formatarDataAtual()[1];
+    const url = "https://flood-api.open-meteo.com/v1/flood";
+    const params = new URLSearchParams({
+        latitude: 59.9,
+        longitude: 10.75,
+        daily: "river_discharge",
+        models: "forecast_v4",
+        start_date: dataInicio,
+        end_date: dataFim
+    });
+
+    try {
+        const response = await fetch(`${url}?${params}`);
+        if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
+        
+        const data = await response.json();
+        let dados = await processFloodData(data);
+        if(dados != null){
+            return dados;
         }
-      }
+    } catch (error) {
+        console.error("Erro ao buscar dados de inundação:", error);
+    }
+  }
   
   function processFloodData(data) {
     if (!data || !data.daily) {
@@ -238,53 +189,53 @@ document.addEventListener('DOMContentLoaded', async function () {
         dados.push(riverDischarge[index]);
     });
     return dados;
-}
-
-async function isFlood(){
-  const estados = ['baixo', 'medio', 'alto'];
-  let dadosRio = [];
-  dadosRio = await fetchFloodData();
-
-  let estado = null;
-  let mediaElevacaoRio = 0;
-  let variacaoElevacaoRio = 0;
-
-  if(dadosRio.length != 0){
-    let soma = 0;
-    soma = dadosRio[0] + dadosRio[1] + dadosRio[2];
-    mediaElevacaoRio = (soma/3).toFixed(2);
-    console.log(mediaElevacaoRio);
   }
 
-  if(dadosRio.length != 0){
-    let variacao = 0;
-    variacao = (dadosRio[2] - dadosRio[0]).toFixed(2);
-    variacaoElevacaoRio = variacao;
-    console.log(variacaoElevacaoRio);
-  }
+  async function isFlood(){
+    const estados = ['baixo', 'medio', 'alto'];
+    let dadosRio = [];
+    dadosRio = await fetchFloodData();
 
-  if(mediaElevacaoRio<5){
-      if(variacaoElevacaoRio>3){
-        estado = estados[1];
-      }else if(variacaoElevacaoRio<-3){
-        estado = estados[0];
-      }else{
-        estado = estados[0];
-      }
-  }else if(mediaElevacaoRio<10){
-      if(variacaoElevacaoRio>3){
-        estado = estados[2];
-      }else if(variacaoElevacaoRio<-3){
-        estado = estados[1];
-      }else{
-        estado = estados[1];
-      }
-  }else{
-    estado = estados[2];//alto
+    let estado = null;
+    let mediaElevacaoRio = 0;
+    let variacaoElevacaoRio = 0;
+
+    if(dadosRio.length != 0){
+      let soma = 0;
+      soma = dadosRio[0] + dadosRio[1] + dadosRio[2];
+      mediaElevacaoRio = (soma/3).toFixed(2);
+      console.log(mediaElevacaoRio);
+    }
+
+    if(dadosRio.length != 0){
+      let variacao = 0;
+      variacao = (dadosRio[2] - dadosRio[0]).toFixed(2);
+      variacaoElevacaoRio = variacao;
+      console.log(variacaoElevacaoRio);
+    }
+
+    if(mediaElevacaoRio<5){
+        if(variacaoElevacaoRio>3){
+          estado = estados[1];
+        }else if(variacaoElevacaoRio<-3){
+          estado = estados[0];
+        }else{
+          estado = estados[0];
+        }
+    }else if(mediaElevacaoRio<10){
+        if(variacaoElevacaoRio>3){
+          estado = estados[2];
+        }else if(variacaoElevacaoRio<-3){
+          estado = estados[1];
+        }else{
+          estado = estados[1];
+        }
+    }else{
+      estado = estados[2];//alto
+    }
+
+    return estado;
   }
-  
-  return estado;
-}
 
   async function updateAlert(){
     let estado = await isFlood();
@@ -307,4 +258,63 @@ async function isFlood(){
   }
 
   await updateAlert();
+
+  const publicVapidKey = 'BCQisdcMW1TRQT8VTGVM8Ds-hYNGOsNhsynqCBeDKrt-BJmKvy6iYrGkSgQoamQHp6xdFJY0zhzq4wMsGUIp7QY';
+
+  // Check for service worker
+  if ("serviceWorker" in navigator) {
+    send().catch((err) => console.error(err));
+  }
+  
+  // Register SW, Register Push, Send Push
+  async function send() {
+    // Register Service Worker
+    console.log("Registering service worker...");
+    const register = await navigator.serviceWorker.register("./sw.js", {
+      scope: "/",
+    });
+    console.log("Service Worker Registered...");
+  
+    // Register Push
+    console.log("Registering Push...");
+    const subscription = await register.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+    });
+    console.log("Push Registered...");
+  
+    // Send Push Notification
+    console.log("Sending Push...");
+
+    let estado = await isFlood();
+
+    const payload = {
+      title: 'VigiaEnchente',
+      body: `Sabará: risco ` + estado
+      // add any other fields you need
+    };
+
+    await fetch("http://localhost:3000/subscribe", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subscription, payload })
+    });
+    console.log("Push Sent...");
+  }
+  
+  function urlBase64ToUint8Array(base64String) {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, "+")
+      .replace(/_/g, "/");
+  
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+  
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
 });
+
