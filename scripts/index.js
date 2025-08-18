@@ -4,7 +4,7 @@ const ipInfoToken = "d38fbda3ef6488";
 const newsApiKey = "70be492766714d8cbf00ad8ada64f751";
 const publicVapidKey = 'BCQisdcMW1TRQT8VTGVM8Ds-hYNGOsNhsynqCBeDKrt-BJmKvy6iYrGkSgQoamQHp6xdFJY0zhzq4wMsGUIp7QY';
 
-// --- Helpers (module scope) ---
+// --- Helpers ---
 async function buscarClima(cidade) {
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(cidade)},br&units=metric&lang=pt_br&appid=${apiKey}`;
   const res = await fetch(url);
@@ -102,7 +102,7 @@ function urlBase64ToUint8Array(base64String) {
 async function sendPushSubscription(cidade, estado) {
   if (!('serviceWorker' in navigator)) return;
   try {
-    // call register on the ServiceWorkerContainer so 'this' is correct
+    // forçando a registrar serviceworker no navegador
     const registration = await navigator.serviceWorker.register("./sw.js", { scope: "/" });
 
     const sub = await registration.pushManager.subscribe({
@@ -111,7 +111,7 @@ async function sendPushSubscription(cidade, estado) {
     });
 
     let cidadeResolved = cidade;
-    if (!cidadeResolved) {
+    if (!cidadeResolved) { // para lidar com qualquer erro em "cidade"
       try {
         cidadeResolved = await buscarCidadePorIP();
       } catch (e) {
@@ -127,7 +127,7 @@ async function sendPushSubscription(cidade, estado) {
     await fetch("http://localhost:3000/subscribe", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include', // <-- send session cookie so server can set user_id
+      credentials: 'include', // envia cookie de sessão para o servidor definir user_id
       body: JSON.stringify({ subscription: sub, payload })
     });
 
@@ -138,7 +138,7 @@ async function sendPushSubscription(cidade, estado) {
   }
 }
 
-// --- UI updaters (defined at module scope, invoked after DOM ready) ---
+// --- Updates na UI ---
 function updateWeatherUI(data) {
   if (data?.error) {
     document.querySelector('.weather-title').textContent = 'Erro';
@@ -191,13 +191,12 @@ function updateAlertFromState(estado) {
   }
 }
 
-// --- Initialization (single DOMContentLoaded) ---
+// --- Initializer (DOMContentLoaded) ---
 if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', async () => {
-    // DOM references
     const newsContainer = document.querySelector(".news-container");
 
-    // Determine city: prefer authenticated user's stored address
+    // tenta definir a cidade cadastrada pelo usuário
     let cidade = null;
     try {
       const resp = await fetch('http://localhost:3000/usuario', { method: 'GET', credentials: 'include' });
@@ -206,7 +205,7 @@ if (typeof document !== 'undefined') {
         cidade = userData.endereco?.cidade || null;
       }
     } catch (e) {
-      // ignore, fallback to IP or default
+      // ignora, define por IP ou por cidade padrão
     }
 
     if (!cidade) {
@@ -217,7 +216,7 @@ if (typeof document !== 'undefined') {
       }
     }
 
-    // Fetch & render weather
+    // carregar clima
     try {
       const weather = await buscarClima(cidade);
       updateWeatherUI(weather);
@@ -226,7 +225,7 @@ if (typeof document !== 'undefined') {
       updateWeatherUI({ error: true, message: 'Não foi possível obter o clima' });
     }
 
-    // Fetch & render news
+    // carregar notícias
     try {
       const articles = await buscarNoticias();
       renderNews(articles, newsContainer);
@@ -235,20 +234,20 @@ if (typeof document !== 'undefined') {
       renderNews([], newsContainer);
     }
 
-    // Flood alert and UI update
+    // alerta de enchente e UI
     const coords = await buscarCoord(cidade);
     let lat, lon;
     if (Array.isArray(coords) && coords.length > 0) {
-      ({ lat, lon } = coords[0]); // take first result
+      ({ lat, lon } = coords[0]); // primeiro resultado da query
     } else {
-      // fallback to IP-based coords or a default
+      // tenta puxar coordenadas pelo ip
       const ipCoords = await buscarCoordPorIP().catch(() => null);
       if (ipCoords) {
         [lat, lon] = ipCoords;
       } else {
-        // choose an explicit default coordinate if needed
-        lat = -19.9208;
-        lon = -43.9378;
+        // define coordenadas padrão (sabará)
+        lat = -19.8949;
+        lon = -43.8148;
       }
     }
     console.log(JSON.stringify(coords));
@@ -262,14 +261,14 @@ if (typeof document !== 'undefined') {
       estado = 'baixo';
       updateAlertFromState(estado);
     }
-    // Register service worker and subscribe to push (run once)
+    // registra service worker e faz subscribe para notificações
     if ('serviceWorker' in navigator) {
       sendPushSubscription(cidade, estado).catch(err => console.error('Push registration failed:', err));
     }
   });
 }
 
-// Export helper functions for Node tests (safe: only sets module.exports when module is defined)
+// Exportando funções helper para os testes
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     buscarClima,

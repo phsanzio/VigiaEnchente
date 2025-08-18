@@ -2,9 +2,9 @@ const test = require('node:test');
 const assert = require('node:assert');
 const http = require('http');
 
+//configura variável no .env para o node não usar o banco de dados real
 process.env.NODE_ENV = 'test';
 
-// require after setting NODE_ENV so server uses test-mode db/store
 const { app } = require('../server.js');
 
 function httpRequest(options, body) {
@@ -22,22 +22,23 @@ function httpRequest(options, body) {
 
 let server;
 test.before(async () => {
-  server = app.listen(0); // ephemeral port
+  server = app.listen(0); // port para teste
   await new Promise((r) => server.once('listening', r));
 });
 
+//fecha servidor após terminar os testes
 test.after(async () => {
-  // wait for server to fully close so tests exit cleanly
+  // espera o servidor fechar totalmente para encerrar todos os testes
   await new Promise((resolve, reject) => server.close((err) => err ? reject(err) : resolve()));
 });
 
-test('GET / should respond (200 or 304) and return some body', async () => {
+test('GET / deve responder (200 ou 304) e retornar algum body', async () => {
   const port = server.address().port;
   const res = await httpRequest({ method: 'GET', hostname: '127.0.0.1', port, path: '/' });
-  assert.ok([200, 304].includes(res.statusCode), `Expected 200/304, got ${res.statusCode}`);
+  assert.ok([200, 304].includes(res.statusCode), `Esperava 200/304, recebeu ${res.statusCode}`);
 });
 
-test('POST /subscribe with invalid body returns 400', async () => {
+test('POST /subscribe with com body inválido 400', async () => {
   const port = server.address().port;
   const res = await httpRequest({
     method: 'POST',
@@ -45,13 +46,13 @@ test('POST /subscribe with invalid body returns 400', async () => {
     port,
     path: '/subscribe',
     headers: { 'Content-Type': 'application/json' }
-  }, JSON.stringify({})); // empty body -> server expects subscription
+  }, JSON.stringify({})); // body vazio: servidor esperando por subscribe
   assert.strictEqual(res.statusCode, 400);
   const json = JSON.parse(res.body);
   assert.ok(json.error);
 });
 
-test('POST /cadastro missing fields returns 400', async () => {
+test('POST /cadastro com campos faltando retorna 400', async () => {
   const port = server.address().port;
   const res = await httpRequest({
     method: 'POST',
@@ -59,11 +60,11 @@ test('POST /cadastro missing fields returns 400', async () => {
     port,
     path: '/cadastro',
     headers: { 'Content-Type': 'application/json' }
-  }, JSON.stringify({ nome: 'ApenasNome' })); // missing other fields
+  }, JSON.stringify({ nome: 'ApenasNome' })); // faltando alguns campos
   assert.strictEqual(res.statusCode, 400);
 });
 
-test('POST /login missing fields returns 400', async () => {
+test('POST /login com campos vazios retorna 400', async () => {
   const port = server.address().port;
   const res = await httpRequest({
     method: 'POST',
@@ -71,6 +72,6 @@ test('POST /login missing fields returns 400', async () => {
     port,
     path: '/login',
     headers: { 'Content-Type': 'application/json' }
-  }, JSON.stringify({ email: 'a@b.c' })); // missing senha
+  }, JSON.stringify({ email: 'a@b.c' })); // faltando senha
   assert.strictEqual(res.statusCode, 400);
 });

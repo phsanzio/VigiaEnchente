@@ -3,25 +3,25 @@ const assert = require('node:assert');
 
 process.env.NODE_ENV = 'test';
 
-// import helpers from scripts/index.js (now exports helpers)
+// importa helpers descripts/index.js
 const {
   processFloodData,
   isFlood
 } = require('../scripts/index.js');
 
-test('processFloodData returns [] for invalid input', () => {
+test('processFloodData retorna [] para input inválido', () => {
   assert.deepStrictEqual(processFloodData(null), []);
   assert.deepStrictEqual(processFloodData({}), []);
   assert.deepStrictEqual(processFloodData({ daily: {} }), []);
 });
 
-test('processFloodData returns first three river_discharge values', () => {
+test('processFloodData retorna primeiros três valores de river_discharge', () => {
   const input = { daily: { river_discharge: [10, 20, 30, 40] } };
   const out = processFloodData(input);
   assert.deepStrictEqual(out, [10, 20, 30]);
 });
 
-test('isFlood returns "baixo" for low stable values', async () => {
+test('isFlood retorna "baixo" para valores baixos', async () => {
   const savedFetch = global.fetch;
   global.fetch = async () => ({
     ok: true,
@@ -34,7 +34,7 @@ test('isFlood returns "baixo" for low stable values', async () => {
   global.fetch = savedFetch;
 });
 
-test('isFlood returns "medio" for medium/varied values', async () => {
+test('isFlood retorna "medio" para valores médios', async () => {
   const savedFetch = global.fetch;
   global.fetch = async () => ({
     ok: true,
@@ -47,7 +47,7 @@ test('isFlood returns "medio" for medium/varied values', async () => {
   global.fetch = savedFetch;
 });
 
-test('isFlood returns "alto" for high values', async () => {
+test('isFlood retorna "alto" para valores altos', async () => {
   const savedFetch = global.fetch;
   global.fetch = async () => ({
     ok: true,

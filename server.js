@@ -8,6 +8,8 @@ const cors = require('cors');
 const webpush = require('web-push');
 require('dotenv').config();
 
+//verifica se variável no .env está configurada para rodar os testes
+//comentar linha quando for rodar o código
 const isTest = process.env.NODE_ENV === 'test';
 
 const app = express();
@@ -21,7 +23,7 @@ const port = 3000;
 // Conexão com o banco de dados MySQL
 let db;
 if (isTest) {
-  // lightweight fake DB for tests (callbacks compatible)
+  //db falso para testes
   db = {
     connect: (cb) => cb && cb(null),
     execute: (q, params, cb) => cb && cb(null, []),
@@ -53,10 +55,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 
-const sessionStoreOptions = {}; // optional: leave empty to use defaults
+const sessionStoreOptions = {}; // opcional, deixar vazio para usar default
 let sessionStore;
 if (isTest) {
-  // use built-in memory store in tests to avoid MySQL session store dependency
+  //memória built-in para testes para evitar dependência de armazenamento de sessões do mysql
   const MemoryStore = session.MemoryStore;
   sessionStore = new MemoryStore();
 } else {
@@ -64,6 +66,7 @@ if (isTest) {
   sessionStore = new MySQLStore(sessionStoreOptions, db);
 }
 
+//configura cookies
 app.use(session({
   key: 'connect.sid',
   store: sessionStore,
@@ -76,7 +79,7 @@ app.use(session({
 
 //mandar notificações pelo navegador
 
-// VAPID keys: don't abort server on missing keys (tests won't set them)
+// VAPID keys
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
@@ -91,9 +94,8 @@ if (!publicVapidKey || !privateVapidKey) {
 }
 
 app.post("/subscribe", (req, res) => {
-  //console.log('Incoming /subscribe body:', JSON.stringify(req.body)); // <--- debug
   console.log('Headers:', JSON.stringify(req.headers));
-  console.log('Raw body:', JSON.stringify(req.body)); // what the client actually posted
+  console.log('Raw body:', JSON.stringify(req.body)); //o que o cliente mandou no post
   let subscription = req.body && req.body.subscription ? req.body.subscription : req.body;
   const payloadObj = req.body && req.body.payload ? req.body.payload : { title: "VigiaEnchente", body: "Notif. padrao" };
   console.log('Resolved subscription:', !!subscription && subscription.endpoint ? subscription.endpoint : '<none>');
@@ -102,7 +104,7 @@ app.post("/subscribe", (req, res) => {
     return res.status(400).json({ error: 'Invalid subscription' });
   }
 
-  // persist subscription in DB
+  // persiste subscription no bd
   const endpoint = subscription.endpoint;
   const p256dh = subscription.keys?.p256dh || null;
   const auth = subscription.keys?.auth || null;
@@ -124,24 +126,9 @@ app.post("/subscribe", (req, res) => {
     // optionally send an immediate test notification here, or simply acknowledge
     return res.status(201).json({ success: true, saved: true });
   });
-
-  /* payload must be a string
-  const payload = JSON.stringify(payloadObj);
-
-  webpush.sendNotification(subscription, payload)
-    .then(response => {
-      console.log('Push enviado:', response);
-      return res.status(201).json({ success: true });
-    })
-    .catch(err => {
-      console.error('Erro ao enviar push:', err);
-      return res.status(500).json({ error: 'Falha ao enviar push' });
-    });
-  */
 });
 
 //mandar notificações pelo navegador
-// Helper: send notification to one subscription object
 async function sendNotificationTo(subscriptionRow) {
   const sub = {
     endpoint: subscriptionRow.endpoint,
@@ -151,7 +138,7 @@ async function sendNotificationTo(subscriptionRow) {
     }
   };
 
-  // Ensure payload is a string (web-push requires string or Buffer)
+  //verifica se payload é uma string
   let payload;
   if (subscriptionRow.payload == null) {
     payload = JSON.stringify({ title: 'VigiaEnchente', body: 'Alerta padrão' });
@@ -171,7 +158,7 @@ async function sendNotificationTo(subscriptionRow) {
     console.log(`Notif. enviada para:\n ${JSON.stringify(sub)}`)
     return true;
   } catch (err) {
-    // If unsubscribed/expired, remove it from DB
+    //se não estiver subscribed, remove do db
     const status = err && err.statusCode ? err.statusCode : null;
     console.error('sendNotification error for', subscriptionRow.endpoint, err);
     if (status === 410 || status === 404) {
@@ -183,7 +170,7 @@ async function sendNotificationTo(subscriptionRow) {
   }
 }
 
-// Periodic job: fetch all subscriptions and send payloads every 5 minutes
+//manda notificações a cada minuto
 async function periodicPushWorker() {
   db.execute('SELECT endpoint, p256dh, auth, payload, user_id FROM Subscriptions', [], async (err, rows) => {
     if (err) {
@@ -191,21 +178,13 @@ async function periodicPushWorker() {
       return;
     }
     for (const r of rows) {
-      // Optionally build a custom payload per user: query Address by r.user_id and call flood API
-      // For now use stored payload or default
       await sendNotificationTo(r);
     }
   });
 }
 
-// start periodic job every 5 minutes (300000ms)
-// setInterval(periodicPushWorker, 60 * 1000);
-
-// you may also trigger an immediate run on startup
-// periodicPushWorker();
-
 if (!isTest) {
-  // only start periodic worker in non-test runs to avoid keeping the process alive in tests
+  //só mandar notificações periódicas se não for teste, evitar manter o processo rodando durante teste
   setInterval(periodicPushWorker, 60 * 1000);
   periodicPushWorker();
 }
@@ -414,5 +393,5 @@ if (!isTest && require.main === module) {
   });
 }
 
-// Export app and db for tests
+// Exporta app e db for tests
 module.exports = { app, db };
