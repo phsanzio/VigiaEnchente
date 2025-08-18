@@ -1,6 +1,5 @@
 const express = require('express');
 const session = require('express-session');
-const mysql = require('mysql2');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const path = require('path');
@@ -9,6 +8,7 @@ const cors = require('cors');
 const webpush = require('web-push');
 require('dotenv').config();
 
+const isTest = process.env.NODE_ENV === 'test';
 
 const app = express();
 const corsOptions = {
@@ -19,17 +19,32 @@ app.use(cors(corsOptions));
 const port = 3000;
 
 // Conexão com o banco de dados MySQL
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: process.env.DATABASE_PASSWORD,
-  database: 'VigiaEnchente'
-});
+let db;
+if (isTest) {
+  // lightweight fake DB for tests (callbacks compatible)
+  db = {
+    connect: (cb) => cb && cb(null),
+    execute: (q, params, cb) => cb && cb(null, []),
+    query: (q, params, cb) => cb && cb(null, [])
+  };
+} else {
+  const mysql = require('mysql2');
+  db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: process.env.DATABASE_PASSWORD,
+    database: 'VigiaEnchente'
+  });
+}
 
 // Conectar ao banco de dados
 db.connect((err) => {
-  if (err) throw err;
-  console.log('Conectado ao banco de dados!');
+  if (err) {
+    if (!isTest) throw err;
+    console.warn('DB connect skipped in test mode:', err);
+  } else {
+    console.log('Conectado ao banco de dados!');
+  }
 });
 
 // Middleware para fazer parsing do corpo das requisições
@@ -38,26 +53,36 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 
+const sessionStoreOptions = {}; // optional: leave empty to use defaults
+let sessionStore;
+if (isTest) {
+  // use built-in memory store in tests to avoid MySQL session store dependency
+  const MemoryStore = session.MemoryStore;
+  sessionStore = new MemoryStore();
+} else {
+  const MySQLStore = require('express-mysql-session')(session);
+  sessionStore = new MySQLStore(sessionStoreOptions, db);
+}
+
 app.use(session({
-  secret: 'segredo-super-seguro', // Chave secreta para assinar o cookie da sessão
-  resave: false, // Não salva a sessão se nada foi modificado
-  saveUninitialized: true, // Salva sessões não inicializadas
-  cookie: { maxAge: 3600000 },
-  secure: false,
-  httpOnly: true,
-  sameSite: 'strict' 
+  key: 'connect.sid',
+  store: sessionStore,
+  secret: 'segredo-super-seguro',
+  resave: false,
+  saveUninitialized: false,
+  rolling: true,
+  cookie: { maxAge: 7*24*60*60*1000, httpOnly: true, secure: false, sameSite: 'lax' }
 }));
 
 //mandar notificações pelo navegador
 
+// VAPID keys: don't abort server on missing keys (tests won't set them)
 const publicVapidKey = process.env.PUBLIC_VAPID_KEY;
 const privateVapidKey = process.env.PRIVATE_VAPID_KEY;
 
 if (!publicVapidKey || !privateVapidKey) {
-  console.error('Missing VAPID keys');
-  return res.status(500).json({ error: 'Server VAPID keys not configured' });
+  console.error('Missing VAPID keys - continuing without webpush VAPID setup');
 } else {
-  // Configure VAPID (must match client public key)
   webpush.setVapidDetails(
     'mailto:'+process.env.EMAIL,
     publicVapidKey,
@@ -174,10 +199,16 @@ async function periodicPushWorker() {
 }
 
 // start periodic job every 5 minutes (300000ms)
-setInterval(periodicPushWorker, 60 * 1000);
+// setInterval(periodicPushWorker, 60 * 1000);
 
 // you may also trigger an immediate run on startup
-periodicPushWorker();
+// periodicPushWorker();
+
+if (!isTest) {
+  // only start periodic worker in non-test runs to avoid keeping the process alive in tests
+  setInterval(periodicPushWorker, 60 * 1000);
+  periodicPushWorker();
+}
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -376,7 +407,12 @@ app.post('/saveEndr', (req, res) => {
 });
 
 
-// Iniciar o servidor
-app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
-});
+// Iniciar o servidor only when run directly and not under tests
+if (!isTest && require.main === module) {
+  app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+  });
+}
+
+// Export app and db for tests
+module.exports = { app, db };

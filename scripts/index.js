@@ -192,78 +192,100 @@ function updateAlertFromState(estado) {
 }
 
 // --- Initialization (single DOMContentLoaded) ---
-document.addEventListener('DOMContentLoaded', async () => {
-  // DOM references
-  const newsContainer = document.querySelector(".news-container");
+if (typeof document !== 'undefined') {
+  document.addEventListener('DOMContentLoaded', async () => {
+    // DOM references
+    const newsContainer = document.querySelector(".news-container");
 
-  // Determine city: prefer authenticated user's stored address
-  let cidade = null;
-  try {
-    const resp = await fetch('http://localhost:3000/usuario', { method: 'GET', credentials: 'include' });
-    if (resp.ok) {
-      const userData = await resp.json();
-      cidade = userData.endereco?.cidade || null;
-    }
-  } catch (e) {
-    // ignore, fallback to IP or default
-  }
-
-  if (!cidade) {
+    // Determine city: prefer authenticated user's stored address
+    let cidade = null;
     try {
-      cidade = await buscarCidadePorIP();
+      const resp = await fetch('http://localhost:3000/usuario', { method: 'GET', credentials: 'include' });
+      if (resp.ok) {
+        const userData = await resp.json();
+        cidade = userData.endereco?.cidade || null;
+      }
     } catch (e) {
-      cidade = cidadePadrao;
+      // ignore, fallback to IP or default
     }
-  }
 
-  // Fetch & render weather
-  try {
-    const weather = await buscarClima(cidade);
-    updateWeatherUI(weather);
-  } catch (err) {
-    console.error('Erro ao obter/climate:', err);
-    updateWeatherUI({ error: true, message: 'Não foi possível obter o clima' });
-  }
+    if (!cidade) {
+      try {
+        cidade = await buscarCidadePorIP();
+      } catch (e) {
+        cidade = cidadePadrao;
+      }
+    }
 
-  // Fetch & render news
-  try {
-    const articles = await buscarNoticias();
-    renderNews(articles, newsContainer);
-  } catch (err) {
-    console.error('Erro ao buscar notícias:', err);
-    renderNews([], newsContainer);
-  }
+    // Fetch & render weather
+    try {
+      const weather = await buscarClima(cidade);
+      updateWeatherUI(weather);
+    } catch (err) {
+      console.error('Erro ao obter/climate:', err);
+      updateWeatherUI({ error: true, message: 'Não foi possível obter o clima' });
+    }
 
-  // Flood alert and UI update
-  const coords = await buscarCoord(cidade);
-  let lat, lon;
-  if (Array.isArray(coords) && coords.length > 0) {
-    ({ lat, lon } = coords[0]); // take first result
-  } else {
-    // fallback to IP-based coords or a default
-    const ipCoords = await buscarCoordPorIP().catch(() => null);
-    if (ipCoords) {
-      [lat, lon] = ipCoords;
+    // Fetch & render news
+    try {
+      const articles = await buscarNoticias();
+      renderNews(articles, newsContainer);
+    } catch (err) {
+      console.error('Erro ao buscar notícias:', err);
+      renderNews([], newsContainer);
+    }
+
+    // Flood alert and UI update
+    const coords = await buscarCoord(cidade);
+    let lat, lon;
+    if (Array.isArray(coords) && coords.length > 0) {
+      ({ lat, lon } = coords[0]); // take first result
     } else {
-      // choose an explicit default coordinate if needed
-      lat = -19.9208;
-      lon = -43.9378;
+      // fallback to IP-based coords or a default
+      const ipCoords = await buscarCoordPorIP().catch(() => null);
+      if (ipCoords) {
+        [lat, lon] = ipCoords;
+      } else {
+        // choose an explicit default coordinate if needed
+        lat = -19.9208;
+        lon = -43.9378;
+      }
     }
-  }
-  console.log(JSON.stringify(coords));
-  console.log(`${lat} / ${lon}`);
-  let estado = 'baixo';
-  try {
-    estado = await isFlood(lat, lon);
-    updateAlertFromState(estado);
-  } catch (err) {
-    console.error('Erro ao calcular alerta de enchente:', err);
-    estado = 'baixo';
-    updateAlertFromState(estado);
-  }
-  // Register service worker and subscribe to push (run once)
-  if ('serviceWorker' in navigator) {
-    sendPushSubscription(cidade, estado).catch(err => console.error('Push registration failed:', err));
-  }
-});
+    console.log(JSON.stringify(coords));
+    console.log(`${lat} / ${lon}`);
+    let estado = 'baixo';
+    try {
+      estado = await isFlood(lat, lon);
+      updateAlertFromState(estado);
+    } catch (err) {
+      console.error('Erro ao calcular alerta de enchente:', err);
+      estado = 'baixo';
+      updateAlertFromState(estado);
+    }
+    // Register service worker and subscribe to push (run once)
+    if ('serviceWorker' in navigator) {
+      sendPushSubscription(cidade, estado).catch(err => console.error('Push registration failed:', err));
+    }
+  });
+}
+
+// Export helper functions for Node tests (safe: only sets module.exports when module is defined)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    buscarClima,
+    buscarCoord,
+    buscarCidadePorIP,
+    buscarCoordPorIP,
+    buscarNoticias,
+    formatarDataAtual,
+    fetchFloodData,
+    processFloodData,
+    isFlood,
+    urlBase64ToUint8Array,
+    sendPushSubscription,
+    updateWeatherUI,
+    renderNews,
+    updateAlertFromState
+  };
+}
 
