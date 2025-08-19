@@ -59,7 +59,7 @@ create table if not exists Alert (
 );
 
 CREATE TABLE IF NOT EXISTS Subscriptions (
-  endpoint VARCHAR(1024) PRIMARY KEY,
+  endpoint VARCHAR(512) PRIMARY KEY,
   p256dh VARCHAR(255),
   auth VARCHAR(255),
   user_id INT(11) NULL,
@@ -68,3 +68,5 @@ CREATE TABLE IF NOT EXISTS Subscriptions (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES Users(id_user) ON DELETE SET NULL ON UPDATE CASCADE
 );
+
+SELECT * FROM Subscriptions;
