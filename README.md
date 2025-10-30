@@ -4,7 +4,7 @@ Por Lívia Mendes, Paulo Moura, Pedro Sanzio e Raphael Abade.
 
 ## Visão Geral
 
-O VigiaEnchente é uma portal web para compartilhar informações sobre inundação, alagamento e dicas de segurança para seus usuários. O sistema é composto de uma página web, que disponibiliza informações para o usuário e permite cadastro para aquele que desejar receber notificações, e um back-end em Node.js responsável pela interface web e monitoramento do clima a partir de diferentes APIs. Este repositório contém o código-fonte e os recursos necessários para implantar e manter o sistema VigiaEnchente.
+O VigiaEnchente é uma portal web para compartilhar informações sobre inundação, alagamento e dicas de segurança para seus usuários. O sistema é composto de uma página web, que disponibiliza informações para o usuário e permite cadastro para aquele que desejar receber notificações, e um back-end em Node.js responsável pela interface web e monitoramento do clima a partir de diferentes APIs. Este repositório contém o código-fonte do protótipo e os recursos necessários para implantar e manter o sistema VigiaEnchente.
 
 ## Funcionalidades
 
@@ -18,7 +18,11 @@ O VigiaEnchente é uma portal web para compartilhar informações sobre inundaç
 - **CSS:** Estilização para a interface do usuário.
 - **HTML:** Estrutura e layout da aplicação.
 
-## Primeiros Passos
+## Demonstração
+
+Demonstração em vídeo: [Link](https://drive.google.com/file/d/19fQrxUqzAWa3t1PS_jiPVN0hHuY9Ot-l/view)
+
+## Build
 
 ### Pré-requisitos
 
